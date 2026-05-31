@@ -1,3 +1,63 @@
-baseURL = 'https://example.org/'
-locale = 'en-us'
-title = 'My New Hugo Project'
+baseURL = 'https://etiennenel.com/'
+languageCode = 'en-gb'
+defaultContentLanguage = "en-gb"
+enableEmoji = true
+theme = "hugo-blog-awesome"
+
+[services]
+  [services.googleAnalytics]
+    id = ''
+
+[markup]
+  [markup.highlight]
+    noClasses = false
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 4
+    ordered = false
+
+[Languages.en-gb]
+  languageName = "English"
+  languageCode = "en-gb"
+  contentDir = "content/en"
+  weight = 1
+
+  [Languages.en-gb.menu]
+  [[Languages.en-gb.menu.main]]
+    pageRef = "/"
+    name = 'Home'
+    url = '/'
+    weight = 10
+  [[Languages.en-gb.menu.main]]
+    pageRef = "posts"
+    name = 'Posts'
+    url = '/posts/'
+    weight = 20
+  [[Languages.en-gb.menu.main]]
+    pageRef = "about"
+    name = 'About'
+    url = '/about/'
+    weight = 30
+
+[Languages.en-gb.params]
+  sitename = "etiennenel.com"
+  defaultColor = "auto"
+  description = "Etienne's personal site"
+  mainSections = ['posts']
+  toc = true
+  tocOpen = false
+  goToTop = true
+  dateFormat = "2 Jan 2006"
+  rssFeedDescription = "summary"
+
+[Languages.en-gb.params.author]
+  avatar = "avatar.jpg"
+  intro = "etiennenel.com"
+  name = "Etienne"
+  description = "Personal writing and notes."
+
+[[params.socialIcons]]
+  name = "Rss"
+  url = "/index.xml"
