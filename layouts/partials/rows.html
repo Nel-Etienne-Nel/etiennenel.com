@@ -1,0 +1,21 @@
+{{- /* Post index rows. Context: a page collection. */ -}}
+{{ if . }}
+<ol class="rows">
+  {{ range . }}
+  {{ $no := partial "fn/number.html" . }}
+  <li class="row">
+    <a href="{{ .RelPermalink }}">
+      <span class="no">{{ $no | default "—" }}</span>
+      <div>
+        <h3>{{ partial "fn/name.html" . }}</h3>
+        <p class="dek">{{ .Description | default .Summary | plainify | truncate 140 }}</p>
+      </div>
+      <span class="meta caps topic">{{ .Date.Format site.Params.dateFormat }}</span>
+      <span class="meta caps">{{ .ReadingTime }} min</span>
+    </a>
+  </li>
+  {{ end }}
+</ol>
+{{ else }}
+<p class="empty caps">Nothing published yet.</p>
+{{ end }}

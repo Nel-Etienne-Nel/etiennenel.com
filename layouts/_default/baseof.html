@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="{{ site.Language.Locale | default "en-gb" }}">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <main id="main">
+    {{ block "main" . }}{{ end }}
+  </main>
+  {{ partial "bar.html" . }}
+  {{ $js := resources.Get "js/field.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+</body>
+</html>

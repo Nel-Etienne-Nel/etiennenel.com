@@ -1,0 +1,17 @@
+{{ define "main" }}
+<section class="stage" aria-label="Visualizer">
+  <canvas class="field" data-glyph="404" aria-hidden="true"></canvas>
+  <div class="panels">
+    <section class="panel info" id="info">
+      <div class="panel-head caps">
+        <h2>Not found</h2>
+        <button type="button" aria-expanded="true" aria-controls="info-body" data-toggle>−</button>
+      </div>
+      <div class="panel-body" id="info-body">
+        <p class="big">There's nothing at this address. It may have moved, or it was never written.</p>
+        <p class="more caps"><a href="{{ "/" | relURL }}">← Back to the start</a> · <a href="{{ "/posts/" | relURL }}">All posts</a></p>
+      </div>
+    </section>
+  </div>
+</section>
+{{ end }}

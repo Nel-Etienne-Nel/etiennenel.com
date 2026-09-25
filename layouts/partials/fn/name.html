@@ -1,0 +1,2 @@
+{{- /* Title without its leading number: "001 - Cognative Surrender" → "Cognative Surrender" */ -}}
+{{- return replaceRE `^\d+\s*[-–—:.]\s*` "" .Title -}}

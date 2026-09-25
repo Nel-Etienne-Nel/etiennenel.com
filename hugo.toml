@@ -1,12 +1,7 @@
 baseURL = 'https://etiennenel.com/'
-languageCode = 'en-gb'
+locale = 'en-gb'
 defaultContentLanguage = "en-gb"
-enableEmoji = true
-theme = "hugo-blog-awesome"
-
-[services]
-  [services.googleAnalytics]
-    id = ''
+title = "etiennenel.com"
 
 [markup]
   [markup.highlight]
@@ -19,45 +14,16 @@ theme = "hugo-blog-awesome"
     ordered = false
 
 [Languages.en-gb]
-  languageName = "English"
-  languageCode = "en-gb"
+  label = "English"
+  locale = "en-gb"
   contentDir = "content/en"
   weight = 1
 
-  [Languages.en-gb.menu]
-  [[Languages.en-gb.menu.main]]
-    pageRef = "/"
-    name = 'Home'
-    url = '/'
-    weight = 10
-  [[Languages.en-gb.menu.main]]
-    pageRef = "posts"
-    name = 'Posts'
-    url = '/posts/'
-    weight = 20
-  [[Languages.en-gb.menu.main]]
-    pageRef = "about"
-    name = 'About'
-    url = '/about/'
-    weight = 30
-
-[Languages.en-gb.params]
-  sitename = "etiennenel.com"
-  defaultColor = "auto"
-  description = "Etienne's personal site"
+[params]
+  author = "Etienne Nel"
+  description = "Once a week, Etienne writes without AI. An experiment in thinking a thought all the way through."
   mainSections = ['posts']
-  toc = true
-  tocOpen = false
-  goToTop = true
   dateFormat = "2 Jan 2006"
   rssFeedDescription = "summary"
-
-[Languages.en-gb.params.author]
-  avatar = "avatar.jpg"
-  intro = "etiennenel.com"
-  name = "Etienne"
-  description = "Personal writing and notes."
-
-[[params.socialIcons]]
-  name = "Rss"
-  url = "/index.xml"
+  # The giant glyph the home-page field draws. Posts draw their number instead.
+  glyph = "e,"

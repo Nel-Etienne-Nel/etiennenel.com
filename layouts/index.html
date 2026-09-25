@@ -1,0 +1,53 @@
+{{ define "main" }}
+{{ $posts := partial "fn/posts.html" . }}
+{{ $words := 0 }}{{ range $posts }}{{ $words = add $words .WordCount }}{{ end }}
+<section class="stage" aria-label="Visualizer">
+  <canvas class="field" data-glyph="{{ site.Params.glyph | default "e," }}" aria-hidden="true"></canvas>
+
+  <div class="panels">
+    <section class="panel info" id="info">
+      <div class="panel-head caps">
+        <h2>Info</h2>
+        <button type="button" aria-expanded="true" aria-controls="info-body" data-toggle>−</button>
+      </div>
+      <div class="panel-body" id="info-body">
+        <p class="big">I'm Etienne. I work in AI every day. I build with it, I teach it, and I believe in it. But I've noticed it doing something to my thinking that I don't like.</p>
+        <p>So once a week I sit down and write without it. No polish, no assistance, no safety net. Just an idea and whatever I can make of it. Some of it will be rough. That's the point.</p>
+        <p class="more caps"><a href="{{ "/about/" | relURL }}">More about this →</a></p>
+        <p class="fine caps">Every character on this screen is an e. Move over it to look through.</p>
+      </div>
+    </section>
+
+    <section class="panel now" id="now">
+      <div class="panel-head caps">
+        <h2>Readout</h2>
+        <button type="button" aria-expanded="true" aria-controls="now-body" data-toggle>−</button>
+      </div>
+      <div class="panel-body" id="now-body">
+        <dl class="readout caps">
+          <dt>Characters on screen</dt><dd id="count">0</dd>
+          <dt>Density</dt><dd id="dens">9.3</dd>
+          <dt>Posts published</dt><dd>{{ len $posts }}</dd>
+          <dt>Words, unassisted</dt><dd>{{ lang.FormatNumber 0 $words }}</dd>
+          {{ with index $posts 0 }}<dt>Last written</dt><dd>{{ .Date.Format site.Params.dateFormat }}</dd>{{ end }}
+          <dt>Your local time</dt><dd id="clock">--:--:--</dd>
+        </dl>
+        <p class="fine caps"><a href="{{ "/index.xml" | relURL }}">RSS</a> · No cookies. No tracking.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="zoom" role="group" aria-label="Density">
+    <button type="button" id="zin" aria-label="More characters">+</button>
+    <button type="button" id="zout" aria-label="Fewer characters">−</button>
+  </div>
+</section>
+
+<section class="index" id="posts" aria-labelledby="idx">
+  <div class="index-head">
+    <h2 id="idx">e,e,e,</h2>
+    <p class="caps">Posts. One a week, written by hand.</p>
+  </div>
+  {{ partial "rows.html" $posts }}
+</section>
+{{ end }}

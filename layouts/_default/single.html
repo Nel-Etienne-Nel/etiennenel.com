@@ -1,0 +1,60 @@
+{{ define "main" }}
+{{ $isPost := in site.Params.mainSections .Section }}
+{{ $no := partial "fn/number.html" . }}
+{{ $name := partial "fn/name.html" . }}
+<section class="stage short" aria-label="Visualizer">
+  <canvas class="field" data-glyph="{{ $no | default (site.Params.glyph | default "e,") }}" aria-hidden="true"></canvas>
+  <div class="panels">
+    <section class="panel title" id="info">
+      <div class="panel-head caps">
+        <h2>{{ if $isPost }}Post{{ with $no }} {{ . }}{{ end }}{{ else }}{{ .Title }}{{ end }}</h2>
+        <button type="button" aria-expanded="true" aria-controls="title-body" data-toggle>−</button>
+      </div>
+      <div class="panel-body" id="title-body">
+        <h1>{{ $name }}</h1>
+        {{ if $isPost }}
+        <dl class="readout caps">
+          <dt>Written</dt><dd><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time></dd>
+          <dt>Words</dt><dd>{{ lang.FormatNumber 0 .WordCount }}</dd>
+          <dt>Reading time</dt><dd>{{ .ReadingTime }} min</dd>
+          <dt>AI assistance</dt><dd>None</dd>
+        </dl>
+        {{ end }}
+      </div>
+    </section>
+  </div>
+  <div class="zoom" role="group" aria-label="Density">
+    <button type="button" id="zin" aria-label="More characters">+</button>
+    <button type="button" id="zout" aria-label="Fewer characters">−</button>
+  </div>
+</section>
+
+<article class="article">
+  <aside>
+    {{ if and $isPost (gt (len .TableOfContents) 80) }}
+    <section class="panel toc">
+      <div class="panel-head caps">
+        <h2>Contents</h2>
+        <button type="button" aria-expanded="true" aria-controls="toc-body" data-toggle>−</button>
+      </div>
+      <div class="panel-body" id="toc-body">{{ .TableOfContents }}</div>
+    </section>
+    {{ end }}
+  </aside>
+  <div class="prose">
+    {{ .Content }}
+  </div>
+</article>
+
+{{ if $isPost }}
+{{ $siblings := where site.RegularPages "Section" .Section }}
+{{ $older := index (where $siblings "Date" "lt" .Date) 0 }}
+{{ $newer := index (where $siblings "Date" "gt" .Date | last 1) 0 }}
+{{ if or $older $newer }}
+<nav class="pager caps" aria-label="More posts">
+  {{ with $older }}<a class="prev" href="{{ .RelPermalink }}"><span>← Older</span><strong>{{ .Title }}</strong></a>{{ end }}
+  {{ with $newer }}<a class="next" href="{{ .RelPermalink }}"><span>Newer →</span><strong>{{ .Title }}</strong></a>{{ end }}
+</nav>
+{{ end }}
+{{ end }}
+{{ end }}
