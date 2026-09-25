@@ -1,6 +1,6 @@
 // The e, field: a grid of "e," glyphs that together draw one giant glyph
-// (the canvas's data-glyph). Cursor opens a clear lens; the density slider
-// in the bottom bar rescales the grid.
+// (the canvas's data-glyph). The cursor opens a clear lens; the +/− buttons
+// rescale the grid.
 (() => {
   const cv = document.querySelector('canvas.field');
   const $ = id => document.getElementById(id);
@@ -19,12 +19,6 @@
       panel.dataset.collapsed = String(open);
     });
   });
-  const about = $('about-btn');
-  if (about) about.addEventListener('click', () => {
-    const btn = document.querySelector('#info [data-toggle]');
-    if (btn.getAttribute('aria-expanded') === 'false') btn.click();
-    $('info').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
-  });
   const clock = $('clock');
   if (clock) {
     const tick = () => { clock.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }); };
@@ -33,17 +27,18 @@
 
   if (!cv) return;
   const ctx = cv.getContext('2d');
-  const range = $('density');
   const countEl = $('count');
   const densEl = $('dens');
   const glyph = cv.dataset.glyph || 'e,';
 
   let W = 0, H = 0, dpr = 1, cols = 0, rows = 0, cw = 0, ch = 0, mask = new Float32Array(0);
   let ink = '#000';
+  let density = 9.3;                          // 8.8 (coarse) → 9.8 (fine)
   const mouse = { x: -9999, y: -9999, r: 0, tr: 0 };
-  const t0 = performance.now();
+  let t0 = performance.now();
+  let frame = 0;
 
-  try { const d = localStorage.getItem('density'); if (d && range) range.value = d; } catch (e) {}
+  try { const d = parseFloat(localStorage.getItem('density')); if (d >= 8.8 && d <= 9.8) density = d; } catch (e) {}
 
   function readInk() { ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#000'; }
 
@@ -53,14 +48,13 @@
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = r.width; H = r.height;
     cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    const d = range ? parseFloat(range.value) : 9.3;
-    if (densEl) densEl.textContent = d.toFixed(1);
-    cw = 36 - (d - 8.8) * 22;               // 36px → 14px cells
-    if (W < 600) cw *= .58;                  // phones need more columns for the glyph to read
+    if (densEl) densEl.textContent = density.toFixed(1);
+    cw = 36 - (density - 8.8) * 22;           // 36px → 14px cells
+    if (W < 600) cw *= .58;                   // phones need more columns for the glyph to read
     ch = cw * 1.12;
     cols = Math.ceil(W / cw); rows = Math.ceil(H / ch);
     buildMask();
-    if (reduce) draw(performance.now());
+    redraw();
   }
 
   // Rasterise the big glyph into a cols×rows buffer; each cell samples its coverage.
@@ -68,7 +62,7 @@
     const off = document.createElement('canvas');
     off.width = cols; off.height = rows;
     const o = off.getContext('2d');
-    o.save(); o.scale(1, 1 / 1.12);          // cells are taller than wide
+    o.save(); o.scale(1, 1 / 1.12);           // cells are taller than wide
     o.font = `700 100px ${FONT}`;
     const wRatio = o.measureText(glyph).width / 100;
     const narrow = W < 860;
@@ -89,72 +83,70 @@
     for (let i = 0; i < mask.length; i++) mask[i] = data[i * 4 + 3] / 255;
   }
 
-  const SIZES = [.42, .62, .82, 1.04];
+  // Only the glyph is drawn: full-size e, inside it, smaller ones along its
+  // anti-aliased edge so the outline stays crisp.
+  const SIZES = [.62, .82, 1.04];
   function draw(now) {
-    const t = now - t0;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = ink;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
-    mouse.r += (mouse.tr - mouse.r) * .15;
-    const reveal = reduce ? 9 : Math.min(9, t / 1500);
-    const buckets = [[], [], [], []];
+    mouse.r += (mouse.tr - mouse.r) * .18;
+    const reveal = reduce ? 1 : Math.min(1, (now - t0) / 1200);
+    const buckets = [[], [], []];
     let n = 0;
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
-        if ((x + y) / (cols + rows) > reveal) continue;          // diagonal load-in
         const m = mask[y * cols + x];
-        const wave = .5 + .5 * Math.sin(x * .21 + t * .0011 + Math.sin(y * .17 + t * .0007) * 2.2);
-        let v = m > .35 ? .45 + .55 * wave : (wave > .9 ? (wave - .9) * 6 : 0);
-        if (v <= .05) continue;
+        if (m < .35) continue;
+        if ((x + y) / (cols + rows) > reveal) continue;           // diagonal load-in
         const px = x * cw + cw / 2, py = y * ch + ch / 2;
+        let b = m > .85 ? 2 : m > .6 ? 1 : 0;
         if (mouse.r > 1) {
           const dx = px - mouse.x, dy = py - mouse.y, dd = Math.sqrt(dx * dx + dy * dy);
-          if (dd < mouse.r) continue;                              // the lens
-          if (dd < mouse.r + cw * 1.5) v = 1;                      // bold rim
+          if (dd < mouse.r) continue;                               // the lens
+          if (dd < mouse.r + cw * 1.5) b = 2;                       // bold rim
         }
-        buckets[Math.min(3, Math.floor(v * 4))].push(px, py);
+        buckets[b].push(px, py);
         n++;
       }
     }
-    for (let b = 0; b < 4; b++) {
+    for (let b = 0; b < SIZES.length; b++) {
       const arr = buckets[b]; if (!arr.length) continue;
       ctx.font = `700 ${ch * SIZES[b]}px ${FONT}`;
       for (let i = 0; i < arr.length; i += 2) ctx.fillText('e,', arr[i], arr[i + 1]);
     }
     if (countEl) countEl.textContent = n.toLocaleString();
+    // keep animating only while the load-in or the lens is still moving
+    frame = (reveal < 1 || Math.abs(mouse.tr - mouse.r) > .5) ? requestAnimationFrame(draw) : 0;
   }
-
-  let visible = true;
-  function loop(now) { if (visible) draw(now); requestAnimationFrame(loop); }
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(cv);
+  function redraw() { if (!frame) frame = requestAnimationFrame(draw); }
 
   cv.addEventListener('pointermove', e => {
     const r = cv.getBoundingClientRect();
     mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
     mouse.tr = Math.max(60, Math.min(W, H) * .14);
-    if (reduce) { mouse.r = mouse.tr; draw(performance.now()); }
+    if (reduce) mouse.r = mouse.tr;
+    redraw();
   });
-  cv.addEventListener('pointerleave', () => { mouse.tr = 0; if (reduce) { mouse.r = 0; draw(performance.now()); } });
+  cv.addEventListener('pointerleave', () => { mouse.tr = 0; if (reduce) mouse.r = 0; redraw(); });
 
   const setDensity = v => {
-    if (!range) return;
-    range.value = Math.max(8.8, Math.min(9.8, v)).toFixed(2);
-    try { localStorage.setItem('density', range.value); } catch (e) {}
+    density = Math.round(Math.max(8.8, Math.min(9.8, v)) * 10) / 10;
+    try { localStorage.setItem('density', String(density)); } catch (e) {}
     layout();
   };
-  if (range) range.addEventListener('input', () => setDensity(parseFloat(range.value)));
   const zin = $('zin'), zout = $('zout');
-  if (zin) zin.addEventListener('click', () => setDensity(parseFloat(range.value) + .1));
-  if (zout) zout.addEventListener('click', () => setDensity(parseFloat(range.value) - .1));
+  if (zin) zin.addEventListener('click', () => setDensity(density + .1));
+  if (zout) zout.addEventListener('click', () => setDensity(density - .1));
 
-  new MutationObserver(readInk).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { readInk(); if (reduce) draw(performance.now()); });
+  new MutationObserver(() => { readInk(); redraw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { readInk(); redraw(); });
   new ResizeObserver(layout).observe(cv);
 
   readInk();
-  const start = () => { layout(); if (!reduce) requestAnimationFrame(loop); };
+  const start = () => { t0 = performance.now(); layout(); };
   (document.fonts && document.fonts.load)
     ? document.fonts.load(`700 40px "Courier Prime"`).then(start, start)
     : start();
