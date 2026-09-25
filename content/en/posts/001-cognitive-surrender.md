@@ -1,5 +1,6 @@
 ---
-title: "001 - Cognative Surrender"
+title: "001 - Cognitive Surrender"
+aliases: ["/posts/001-cognative-surrender/"]
 date: 2026-05-31
 ---
 
@@ -31,4 +32,4 @@ The author also argues that system 2 is lazy by design. The brain is a system th
 
 I think it is good to let AI do some of the thinking for you, things like grammar and structure are often what takes up much of the content creation process and can be quite tedious. Where its not a good idea is to tel AI to write a article about X, give no *context* and expect the correct answer. Without context AI is extremely useless, and arguably making you useless.
 
-Having AI do the work for you is cognative surrender.. leading you down a path of destruction.
+Having AI do the work for you is cognitive surrender.. leading you down a path of destruction.

@@ -1,4 +1,4 @@
-{{- /* Leading post number from a title like "001 - Cognative Surrender" → "001" */ -}}
+{{- /* Leading post number from a title like "001 - Cognitive Surrender" → "001" */ -}}
 {{- $n := "" -}}
 {{- with findRE `^\d+` .Title 1 }}{{ $n = index . 0 }}{{ end -}}
 {{- return $n -}}
