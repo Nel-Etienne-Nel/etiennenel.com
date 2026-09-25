@@ -2,6 +2,8 @@
   "name": "etiennenel-blog",
   "compatibility_date": "2026-05-31",
   "assets": {
-    "directory": "public"
+    "directory": "public",
+    // serve Hugo's 404.html (the "404" field) for unknown URLs
+    "not_found_handling": "404-page"
   }
 }
