@@ -1,7 +1,6 @@
 ---
 title: "T-001 - A Wiki That Claude Maintains"
 date: 2026-09-26
-draft: true
 ---
 
 Most of what I know about my own projects doesn't live in my head any more. It lives in Obsidian, in wikis that Claude writes and I read. This post covers the idea behind that, why I work this way, and how to set up the same thing with a Claude Code plugin I've published.
