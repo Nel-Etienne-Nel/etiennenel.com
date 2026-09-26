@@ -106,63 +106,123 @@ and how to fix it when it breaks.
 Keep the vault in git. The wiki is just Markdown, so you get a full history of every change Claude makes, and an easy undo, for free.
 {{< /tip >}}
 
-## Using it
+## Using it: a NAS, from box to wiki
 
-### Ingest: add something new
+The operations make more sense followed through one real change, so here's one. A few months in, the home-lab wiki already has pages for the Proxmox host, the reverse proxy and the backup strategy. Then I add a NAS.
 
-Drop a source in the inbox and tell Claude to file it. Say I clip an article on ZFS scrubbing into `99 - Inbox/`:
+### Day one: ingest the setup notes
 
-```text {file="Claude Code"}
-Ingest "ZFS scrubbing explained" from the inbox.
+While setting the NAS up I keep rough notes, the way anyone does: half sentences, commands I ran, things to remember. When it's done, that file goes into the inbox as it is. It's a raw source now, so nobody tidies it.
+
+```markdown {file="99 - Inbox/NAS setup notes.md"}
+nas setup 14 sep
+- 4 bay, TrueNAS SCALE 24.10, hostname nas01, static ip 10.0.0.20
+- 4x 8TB, RAIDZ1 pool "tank" (~21TB usable)
+- datasets: tank/media, tank/backups, tank/photos
+- SMB shares for media + photos, NFS export tank/backups -> proxmox
+- snapshots nightly 02:00, keep 14
+- TODO move proxmox backups here instead of the usb drive
+- remember: pool is 80% = slow, don't fill it
 ```
 
-Claude reads `index.md` first to see what already exists. It finds that the NAS and backup pages cover related ground, so it updates those in place instead of starting fresh, and writes one new runbook for the part that didn't exist yet:
+Then one line in Claude Code:
 
-{{< tree title="home-lab/ after the ingest" >}}
+```text {file="Claude Code"}
+Ingest the NAS setup notes from the inbox.
+```
+
+Claude reads `index.md` first. There's no NAS page yet, so one gets written. But the notes also touch pages that already exist, and one of them now disagrees: **Backup Strategy** still says backups go to a USB drive on the Proxmox host. Claude doesn't guess which is true. It asks:
+
+```text {file="Claude Code"}
+Your notes say Proxmox backups should move to the NAS (tank/backups over
+NFS), but Backup Strategy says they go to the USB drive on the Proxmox host.
+Has the move happened, or is it still a TODO?
+
+> Still a TODO. Record the plan, keep the USB drive as current.
+```
+
+So Backup Strategy keeps the USB drive as the current target and gains a "Planned" section pointing at the NAS. That's the difference from a folder of notes: the conflict gets noticed and resolved once, at filing time, instead of surfacing months later when a restore fails. Here's everything the one ingest touched:
+
+{{< tree title="home-lab/ after ingesting the NAS notes" >}}
 home-lab/
-├── index.md (M)                          # new runbook listed
-├── log.md (M)                            # one line for this session
+├── index.md (M)                               # NAS and File Shares listed
+├── log.md (M)
 ├── 00 - Hardware/
-│   └── NAS.md (M)                        # scrub schedule added
+│   ├── NAS.md (+)                             # the machine: disks, pool, network
+│   └── Proxmox Host.md (M)                    # NFS mount of tank/backups
 ├── 01 - Services/
-│   └── Backup Strategy.md (M)            # links to the new runbook
-├── 02 - Runbooks/
-│   └── ZFS Scrubs.md (+)
+│   ├── Backup Strategy.md (M)                 # "Planned": move to the NAS
+│   └── File Shares.md (+)                     # SMB and NFS, who uses what
 └── 99 - Inbox/
-    └── ZFS scrubbing explained.md        # untouched: sources are never edited
+    └── NAS setup notes.md                     # untouched: sources are never edited
 {{< /tree >}}
 
-One source touched five files. That's the point: the knowledge is spread into the places you'll look for it, not left as one more document in a pile. The new page gets frontmatter and links back to the pages it relates to:
+The rough notes became a proper page with frontmatter, facts in one place and links out to everything related:
+
+```markdown {file="00 - Hardware/NAS.md"}
+---
+type: machine
+last_updated: 2026-09-14
+tags: [nas, storage, truenas]
+source: "[[NAS setup notes]]"
+---
+
+# NAS
+
+| Hostname | nas01, 10.0.0.20 |
+| OS       | TrueNAS SCALE 24.10 |
+| Pool     | tank: 4 × 8 TB, RAIDZ1, ~21 TB usable |
+| Datasets | media, backups, photos |
+
+Shares are documented in [[File Shares]]. Nightly snapshots at 02:00, 14 kept.
+Keep the pool under 80% full: ZFS slows down sharply past that.
+Planned: take over Proxmox backups, see [[Backup Strategy]].
+```
+
+And the log gets one line, so the next session knows what happened:
+
+```text {file="home-lab/log.md"}
+2026-09-14 | ingest | NAS setup notes: new [[NAS]] and [[File Shares]]; Proxmox Host gains the NFS mount; Backup Strategy gains a Planned move to the NAS (confirmed: USB drive still current).
+```
+
+### A week later: something to add to it
+
+I read a good article on ZFS scrubs and clip it into the inbox. This time the wiki has somewhere to put it:
+
+```text {file="Claude Code"}
+Ingest "ZFS scrubbing explained".
+```
+
+Claude writes a **ZFS Scrubs** runbook, adds a monthly scrub schedule to the NAS page, and links it from Backup Strategy, because a scrub before a big change is part of doing backups properly. The article didn't mention my NAS at all. The wiki made the connection.
 
 ```markdown {file="02 - Runbooks/ZFS Scrubs.md"}
 ---
 type: runbook
-last_updated: 2026-09-26
+last_updated: 2026-09-21
 tags: [zfs, storage, maintenance]
+source: "[[ZFS scrubbing explained]]"
 ---
 
 # ZFS Scrubs
 
-A scrub reads every block in the pool and repairs anything that fails
-its checksum. Run one monthly on the [[NAS]], and before any change
-covered in [[Backup Strategy]].
+A scrub reads every block in a pool and repairs anything that fails its
+checksum. On the [[NAS]], run one monthly on `tank`, and always before a
+change covered in [[Backup Strategy]].
 ```
 
-And the log gets its line:
+### Two months later: ask it something
 
-```text {file="home-lab/log.md"}
-2026-09-26 | ingest | "ZFS scrubbing explained": new [[ZFS Scrubs]] runbook; NAS gains a monthly scrub schedule; Backup Strategy links to it.
-```
-
-### Query: ask it something
-
-Ask a question and Claude answers from the wiki, reading the curated folders first and combining pages where it needs to:
+A disk starts throwing errors and I want to swap all four for bigger ones. Instead of digging through notes:
 
 ```text {file="Claude Code"}
 What do I need to check before I upgrade the NAS disks?
 ```
 
-If the answer pulled several pages together, it offers to file it back as a new page. A good answer shouldn't disappear into chat history. Next time, it's already in the wiki.
+Claude reads the index, then the pages it points to, and answers from all three: the pool is RAIDZ1, so disks get replaced one at a time with a resilver in between (**NAS**); run a scrub first so a weak disk fails now rather than mid-resilver (**ZFS Scrubs**); and confirm last night's backup, which still lands on the USB drive because the move never happened (**Backup Strategy**). None of those pages says all of that. The answer only exists because the pages are linked.
+
+Then it offers to save the answer as a **Replacing NAS Disks** runbook. I say yes, and the next disk swap starts from a checklist instead of a search.
+
+## Keeping it healthy
 
 ### Lint: a health check
 
@@ -171,8 +231,9 @@ Every so often, ask for a lint. Claude checks the whole wiki and reports back be
 | Issue | Location | Severity | Fix |
 |---|---|---|---|
 | Orphaned page | `01 - Services/DNS.md` | Medium | Link it from Reverse Proxy |
-| Index drift | `ZFS Scrubs.md` not in `index.md` | Low | Add the row |
+| Index drift | `Camera NVR.md` was added by hand, not in `index.md` | Low | Add the row |
 | Stale claim | `Proxmox Host.md`: "latest version is 8.1" | Medium | Re-check and date it |
+| Stale plan | `Backup Strategy.md`: move to the NAS "Planned" for 60 days | Low | Do it, or drop the plan |
 | Unprocessed inbox | 3 items older than 30 days | Low | Ingest or dismiss |
 
 It also looks for broken links, pages missing their meta-files, counts that no longer match, and claims with no source. You say which fixes to apply.
