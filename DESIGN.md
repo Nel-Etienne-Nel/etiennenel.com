@@ -182,9 +182,9 @@ Components are Hugo shortcodes and Markdown extensions. In editorial posts they 
 **How to use the built ones**
 - Code: a normal fence, optionally ```` ```js {file="path/file.js" hl="3-4"} ````. Rendered by `layouts/_default/_markup/render-codeblock.html`.
 - Terminal: a ```` ```console ```` fence. Lines starting `$ ` are commands; the rest is output.
-- File tree: `{{</* tree title="…" */>}}` around a tree drawn with `├── │ └──`. Folders end in `/`, `# note` goes right, a trailing `(+)` `(M)` `(-)` fills the status column.
-- Callouts: `{{</* note */>}}`, `{{</* tip */>}}`, `{{</* warning */>}}` around Markdown, optional `title="…"`.
-- Steps: `{{</* steps */>}}` around a Markdown ordered list whose items start with a **bold lead**. Leave blank lines between items when they contain code or trees.
+- File tree: `{{< tree title="…" >}}` around a tree drawn with `├── │ └──`. Folders end in `/`, `# note` goes right, a trailing `(+)` `(M)` `(-)` fills the status column.
+- Callouts: `{{< note >}}`, `{{< tip >}}`, `{{< warning >}}` around Markdown, optional `title="…"`.
+- Steps: `{{< steps >}}` around a Markdown ordered list whose items start with a **bold lead**. Leave blank lines between items when they contain code or trees.
 Specimen sheet: https://claude.ai/artifact/FXznf8KroNhDJfDye3p5c4
 
 | Component | Status | Styling rule |
