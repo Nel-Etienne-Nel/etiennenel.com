@@ -21,17 +21,5 @@
   {{- $name := strings.TrimPrefix $guide $line -}}
   {{- $rows = $rows | append (dict "guide" $guide "name" $name "note" $note "status" (replace $status "-" "−") "dir" (hasSuffix $name "/")) -}}
 {{- end -}}
-<div class="blk tree-blk">
-  <div class="blk-head">
-    <div class="l"><span class="file">{{ .Get "title" | default (index $rows 0).name }}</span><span class="meta">file tree</span></div>
-    <button class="copy" type="button" data-copy="tree">Copy</button>
-  </div>
-  <div class="scroll"><div class="tree{{ if $hasStatus }} has-status{{ end }}">
-    {{- range $rows }}
-    <div class="r">{{ if $hasStatus }}<span class="g">{{ .status }}</span>{{ end }}<span class="n"><span class="t">{{ .guide }}</span><span class="{{ if .dir }}d{{ end }}">{{ .name }}</span></span><span class="note">{{ .note }}</span></div>
-    {{- end }}
-  </div></div>
-  {{- if $hasStatus }}
-  <div class="legend caps"><span><b>+</b> new</span><span><b>M</b> changed</span><span><b>−</b> deleted</span></div>
-  {{- end }}
-</div>
+{{- /* Emitted as one line: inside a list (e.g. steps) multi-line HTML would be cut short by Markdown. */ -}}
+{{- partial "tree-block.html" (dict "rows" $rows "hasStatus" $hasStatus "title" (.Get "title")) | replaceRE `>\s*\n\s*<` "><" | safeHTML -}}

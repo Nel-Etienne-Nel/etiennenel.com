@@ -1,0 +1,15 @@
+{{- /* Markup for the tree shortcode. Context: dict rows, hasStatus, title. */ -}}
+<div class="blk tree-blk">
+  <div class="blk-head">
+    <div class="l"><span class="file">{{ .title | default (index .rows 0).name }}</span><span class="meta">file tree</span></div>
+    <button class="copy" type="button" data-copy="tree">Copy</button>
+  </div>
+  <div class="scroll"><div class="tree{{ if $.hasStatus }} has-status{{ end }}">
+    {{- range .rows }}
+    <div class="r">{{ if $.hasStatus }}<span class="g">{{ .status }}</span>{{ end }}<span class="n"><span class="t">{{ .guide }}</span><span class="{{ if .dir }}d{{ end }}">{{ .name }}</span></span><span class="note">{{ .note }}</span></div>
+    {{- end }}
+  </div></div>
+  {{- if $.hasStatus }}
+  <div class="legend caps"><span><b>+</b> new</span><span><b>M</b> changed</span><span><b>−</b> deleted</span></div>
+  {{- end }}
+</div>

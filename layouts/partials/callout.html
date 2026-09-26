@@ -1,5 +1,3 @@
-{{- /* Shared body for note / tip / warning. Context: dict "kind" "page" "inner" "title" */ -}}
-<aside class="blk call {{ .kind }}" role="note">
-  <div class="blk-head"><span>{{ .title | default .kind }}</span></div>
-  <div class="blk-body">{{ .page.RenderString (dict "display" "block") .inner }}</div>
-</aside>
+{{- /* Shared body for note / tip / warning. Context: dict "kind" "page" "inner" "title".
+       The frame is one line; the body keeps its newlines (code blocks need them), so avoid callouts inside steps. */ -}}
+<aside class="blk call {{ .kind }}" role="note"><div class="blk-head"><span>{{ .title | default .kind }}</span></div><div class="blk-body">{{ .page.RenderString (dict "display" "block") .inner }}</div></aside>
