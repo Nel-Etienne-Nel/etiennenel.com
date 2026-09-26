@@ -67,7 +67,7 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 | Prose H2 / H3 / H4 | Courier Prime 700 | 26 / 20 / 16px, lh 1.2 | `text-wrap: balance` |
 | Post title (panel) | Courier Prime 700 | clamp(26px, 3.6vw, 40px) / 1.05 | |
 | Index row title | Courier Prime 700 | clamp(18px, 2.2vw, 24px) / 1.2 | |
-| Index heading `e,e,e,` | Courier Prime 700 | clamp(40px, 7vw, 88px) / .9 | letter-spacing −.02em |
+| Home index heading "Etienne Nel" | Courier Prime 700 | clamp(40px, 7vw, 88px) / .9 | letter-spacing −.02em |
 | Code | Plex | 13px / 1.65 | |
 
 - Numbers that line up in columns use `font-variant-numeric: tabular-nums`.
