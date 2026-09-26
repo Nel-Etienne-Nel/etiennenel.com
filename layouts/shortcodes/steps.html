@@ -1,0 +1,3 @@
+{{- /* {{< steps >}} wraps a Markdown ordered list whose items start with a **bold lead**.
+       Only for real sequences: the numbers carry order. */ -}}
+<div class="steps">{{ .Page.RenderString (dict "display" "block") .Inner }}</div>

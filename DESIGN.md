@@ -177,18 +177,25 @@ Every page opens with a stage that draws one big shape out of small characters.
 
 ## 6. Components
 
-Components are Hugo shortcodes and Markdown extensions. They are **containers only**: the words inside are Etienne's.
+Components are Hugo shortcodes and Markdown extensions. In editorial posts they are **containers only**: the words inside are Etienne's.
+
+**How to use the built ones**
+- Code: a normal fence, optionally ```` ```js {file="path/file.js" hl="3-4"} ````. Rendered by `layouts/_default/_markup/render-codeblock.html`.
+- Terminal: a ```` ```console ```` fence. Lines starting `$ ` are commands; the rest is output.
+- File tree: `{{</* tree title="…" */>}}` around a tree drawn with `├── │ └──`. Folders end in `/`, `# note` goes right, a trailing `(+)` `(M)` `(-)` fills the status column.
+- Callouts: `{{</* note */>}}`, `{{</* tip */>}}`, `{{</* warning */>}}` around Markdown, optional `title="…"`.
+- Steps: `{{</* steps */>}}` around a Markdown ordered list whose items start with a **bold lead**. Leave blank lines between items when they contain code or trees.
 Specimen sheet: https://claude.ai/artifact/FXznf8KroNhDJfDye3p5c4
 
 | Component | Status | Styling rule |
 |---|---|---|
-| Code block | proposed | panel · filename + language in the header · line numbers · `▸` + `--soft` for highlighted lines · Copy (excludes line numbers) |
+| Code block | **built** | panel · filename + language in the header · line numbers · `▸` + `--soft` for highlighted lines · Copy (excludes line numbers) |
 | Diff | proposed | `+` lines heavier (500), `−` lines grey with a 1px diagonal hatch. Never red/green |
 | Code tabs | proposed | header tabs, the selected one inverted. Arrow keys move between tabs |
-| Terminal | proposed | **the one fully inverted surface.** Prompt `$` dimmed and not copyable. Output at 70%. Copy = commands only |
-| File tree | proposed | box-drawing guides (`├── │ └──`) · folders bold with a trailing `/` · status column `+` new, `M` changed, `−` deleted · notes right-aligned in `--mute` · a focus line uses the `--soft` band |
-| Callouts | proposed | severity in form: **Note** plain 1px · **Tip** dashed · **Warning** 2px with an inverted header |
-| Steps | proposed | real sequences only · Courier `01 02 03` numerals · bold lead line |
+| Terminal | **built** | **the one fully inverted surface.** Prompt `$` dimmed and not copyable. Output at 70%. Copy = commands only |
+| File tree | **built** | box-drawing guides (`├── │ └──`) · folders bold with a trailing `/` · status column `+` new, `M` changed, `−` deleted · notes right-aligned in `--mute` · a focus line uses the `--soft` band |
+| Callouts | **built** | severity in form: **Note** plain 1px · **Tip** dashed · **Warning** 2px with an inverted header |
+| Steps | **built** | real sequences only · Courier `01 02 03` numerals · bold lead line |
 | Figure | proposed | 1px frame · caption `FIG. 01` auto-numbered |
 | Diagram | proposed | Mermaid written in the post, drawn as 1px boxes and hairline arrows, the key node inverted |
 | Spec table | proposed | caps `--mute` headers · 1px row rules · `REQ` badge · tabular defaults |

@@ -6,6 +6,7 @@ title = "etiennenel.com"
 [markup]
   [markup.highlight]
     noClasses = false
+    lineNumbersInTable = false   # line numbers inline, so copy can skip them
   [markup.goldmark.renderer]
     unsafe = true
   [markup.tableOfContents]

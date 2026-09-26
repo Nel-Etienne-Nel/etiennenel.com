@@ -25,6 +25,23 @@
     tick(); setInterval(tick, 1000);
   }
 
+  // ---- Copy buttons on code, terminal and tree blocks ----
+  const copyText = (kind, blk) => {
+    if (kind === 'cmds') return [...blk.querySelectorAll('.cmd')].map(c => c.textContent).join('\n');
+    if (kind === 'tree') return [...blk.querySelectorAll('.r')].map(r => r.querySelector('.n').textContent.trimEnd()).join('\n');
+    const lines = blk.querySelectorAll('.chroma .cl');
+    return lines.length ? [...lines].map(l => l.textContent.replace(/\n$/, '')).join('\n') : blk.querySelector('pre').textContent;
+  };
+  document.querySelectorAll('.blk [data-copy]').forEach(btn => btn.addEventListener('click', async () => {
+    const blk = btn.closest('.blk');
+    try { await navigator.clipboard.writeText(copyText(btn.dataset.copy, blk)); btn.textContent = 'Copied'; }
+    catch (e) {                                    // no clipboard access: select the text instead
+      const r = document.createRange(); r.selectNodeContents(blk.querySelector('pre, .tree'));
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selected';
+    }
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1400);
+  }));
+
   // ---- file-system menu (burger in the bar) ----
   const burger = document.querySelector('.burger'), fs = $('fs');
   if (burger && fs) {

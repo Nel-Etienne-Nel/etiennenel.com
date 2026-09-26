@@ -1,0 +1,30 @@
+{{- /* Every fenced code block. Attributes: {file="path/name.ext" hl="3-4"}.
+       ```console blocks render as the inverted terminal: "$ " lines are commands,
+       everything else is output. See DESIGN.md §6. */ -}}
+{{- $lang := .Type | default "text" -}}
+{{- $file := .Attributes.file -}}
+{{- if eq $lang "console" -}}
+<div class="blk term">
+  <div class="blk-head"><div class="l"><span>Terminal</span>{{ with $file }}<span class="meta">{{ . }}</span>{{ end }}</div><button class="copy" type="button" data-copy="cmds">Copy</button></div>
+  <div class="scroll"><pre><code>
+    {{- range $i, $line := split (strings.TrimRight "\n" .Inner) "\n" -}}
+      {{- if $i }}{{ "\n" }}{{ end -}}
+      {{- if hasPrefix $line "$ " -}}
+        <span class="ps">$ </span><span class="cmd">{{ strings.TrimPrefix "$ " $line }}</span>
+      {{- else -}}
+        <span class="out">{{ $line }}</span>
+      {{- end -}}
+    {{- end -}}
+  </code></pre></div>
+</div>
+{{- else -}}
+{{- $opts := dict "lineNos" true "lineNumbersInTable" false -}}
+{{- with .Attributes.hl }}{{ $opts = merge $opts (dict "hl_Lines" .) }}{{ end -}}
+<div class="blk code">
+  <div class="blk-head">
+    <div class="l">{{ with $file }}<span class="file">{{ . }}</span>{{ end }}<span class="meta">{{ $lang }}</span></div>
+    <button class="copy" type="button" data-copy="code">Copy</button>
+  </div>
+  <div class="scroll">{{ transform.Highlight (strings.TrimRight "\n" .Inner) $lang $opts }}</div>
+</div>
+{{- end -}}

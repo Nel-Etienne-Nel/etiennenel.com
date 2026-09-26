@@ -1,0 +1,37 @@
+{{- /* File tree. Write the tree with its box-drawing guides, one entry per line:
+
+       {{< tree title="home-lab/" >}}
+       home-lab/
+       ├── CLAUDE.md          # the schema
+       ├── 00 - Hardware/ (+)
+       └── log.md (M)
+       {{< /tree >}}
+
+     Folders end in "/" and render bold. "# note" goes to the right-hand column.
+     A trailing (+) new, (M) changed or (-) deleted fills the status column. */ -}}
+{{- $rows := slice -}}
+{{- $hasStatus := false -}}
+{{- range split (strings.TrimSpace .Inner) "\n" -}}
+  {{- $line := strings.TrimRight " \t\r" . -}}
+  {{- $note := "" -}}
+  {{- with findRESubmatch `^(.*?)\s+#\s+(.*)$` $line 1 }}{{ $line = index (index . 0) 1 }}{{ $note = index (index . 0) 2 }}{{ end -}}
+  {{- $status := "" -}}
+  {{- with findRESubmatch `^(.*?)\s*\((\+|M|-|−)\)$` $line 1 }}{{ $line = index (index . 0) 1 }}{{ $status = index (index . 0) 2 }}{{ $hasStatus = true }}{{ end -}}
+  {{- $guide := index (findRE `^[│├└─ ]*` $line 1) 0 | default "" -}}
+  {{- $name := strings.TrimPrefix $guide $line -}}
+  {{- $rows = $rows | append (dict "guide" $guide "name" $name "note" $note "status" (replace $status "-" "−") "dir" (hasSuffix $name "/")) -}}
+{{- end -}}
+<div class="blk tree-blk">
+  <div class="blk-head">
+    <div class="l"><span class="file">{{ .Get "title" | default (index $rows 0).name }}</span><span class="meta">file tree</span></div>
+    <button class="copy" type="button" data-copy="tree">Copy</button>
+  </div>
+  <div class="scroll"><div class="tree{{ if $hasStatus }} has-status{{ end }}">
+    {{- range $rows }}
+    <div class="r">{{ if $hasStatus }}<span class="g">{{ .status }}</span>{{ end }}<span class="n"><span class="t">{{ .guide }}</span><span class="{{ if .dir }}d{{ end }}">{{ .name }}</span></span><span class="note">{{ .note }}</span></div>
+    {{- end }}
+  </div></div>
+  {{- if $hasStatus }}
+  <div class="legend caps"><span><b>+</b> new</span><span><b>M</b> changed</span><span><b>−</b> deleted</span></div>
+  {{- end }}
+</div>
