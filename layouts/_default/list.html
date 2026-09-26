@@ -1,17 +1,19 @@
 {{ define "main" }}
 {{ $pages := .RegularPages }}
 <section class="stage short" aria-label="Visualizer">
-  <canvas class="field" data-glyph="e,e" aria-hidden="true"></canvas>
+  <canvas class="field" data-glyph="{{ .Params.glyph | default "e,e" }}" aria-hidden="true"></canvas>
   <div class="panels">
     <section class="panel title" id="info">
       <div class="panel-head caps">
-        <h2>Index</h2>
+        <h2>{{ .Section }}/</h2>
         <button type="button" aria-expanded="true" aria-controls="title-body" data-toggle>−</button>
       </div>
       <div class="panel-body" id="title-body">
         <h1>{{ .Title }}</h1>
+        {{ with .Params.description }}<p class="big">{{ . }}</p>{{ end }}
         <dl class="readout caps">
           <dt>Published</dt><dd>{{ len $pages }}</dd>
+          {{ if isset .Params "ai" }}<dt>AI assistance</dt><dd>{{ cond .Params.ai "Used" "None" }}</dd>{{ end }}
           {{ with index $pages 0 }}<dt>Latest</dt><dd>{{ .Date.Format site.Params.dateFormat }}</dd>{{ end }}
         </dl>
       </div>

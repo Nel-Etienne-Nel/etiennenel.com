@@ -10,9 +10,17 @@ Anything new on the site follows this document. If a change needs to break a rul
 **Name:** e,e (read "e comma e"). It echoes *i,i*, the Bon Iver album whose visualizer by Active Theory
 inspired the site. The theme itself is called e,e and so are the site's mark and the "Read e,e" button.
 
-**Premise.** Etienne writes one post a week **without AI**. The design exists to carry that writing.
-It never generates or edits the words. Structure, components and code are fair game; prose is not.
-Spelling or grammar is only touched when Etienne asks in that moment.
+**Premise.** The site holds two kinds of writing, kept apart on purpose:
+
+| Section | What | Written | Numbered |
+|---|---|---|---|
+| **Technical** `/technical/` | explanatory docs: how things work, how to build them | **with AI** | `T-001`, `T-002`… |
+| **Editorial** `/editorial/` | commentary and argument | **by hand, no AI** | `001`, `002`… |
+
+The design never generates or edits **editorial** words. Structure, components and code are fair game;
+editorial prose is not, and spelling or grammar is only touched when Etienne asks in that moment.
+Technical docs may be drafted and edited with AI. Every post states which it is (its readout says
+"AI assistance: None" or "Used").
 
 **Mood:** typographic, like ASCII art. Every image on the site is made of repeated characters. The
 interface is monochrome, monospace and brutalist: hairline boxes, capital-letter labels, no decoration.
@@ -99,7 +107,7 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 │ CONTENT: index rows · article (220px aside +  │
 │ prose) · pager                                │
 ├───────────────────────────────────────────────┤
-│ e, │ ▶ ETIENNE NEL │   (space)   │ ETIENNE │ ABOUT  READ E,E │  fixed bar
+│ e, │ ≡ FILES │ ▶ ETIENNE NEL │  (space)  │ ETIENNE │ ABOUT  READ E,E │  fixed bar
 └───────────────────────────────────────────────┘
 ```
 
@@ -107,11 +115,27 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 - **Panels:** `INFO` (360px, bottom-left), `READOUT` (260px, top-right), title panel (max 560px).
   Header strip: caps label left, `−`/`+` collapse button right.
 - **Readout lists** (`<dl class="readout">`): label in `--mute` left, value right-aligned, tabular.
-- **Index rows:** number (Courier 18px) · title + summary · date · reading time, separated by 1px rules.
+- **Home index:** heading "Etienne Nel", then **two columns**: `technical/` left, `editorial/` right. Each has
+  a caps note ("Written with AI" / "Handwritten, no AI"). They stack under 860px.
+- **Index rows:** number (Courier 18px) · title + summary · date over reading time, separated by 1px rules.
   The hover state is the `--soft` band.
 - **Article:** a sticky 220px aside (Contents panel) next to the prose. It becomes one column under 860px.
-- **Bottom bar:** cells separated by 1px rules: inverted `e,` tile (home) · who (links About) ·
-  flexible spacer · ETIENNE wordmark · About (outline pill) · Read e,e (solid pill).
+- **Bottom bar:** cells separated by 1px rules: inverted `e,` tile (home) · **≡ Files** (opens the file menu) ·
+  who ("Etienne Nel / Technical · Editorial", links About) · flexible spacer · ETIENNE wordmark ·
+  About (outline pill) · Read e,e (solid pill, jumps to the home index).
+
+### File menu (navigation)
+
+The burger opens the site **as a file system**. The screen splits in two: `technical/` slides in from the
+**left** and `editorial/` from the **right** (0.38s ease-out). Each half has:
+- a big Courier folder name (links to the section page), and a file count plus "written with AI / by hand"
+- a real file tree: `├──` / `└──` guides, the post's file name (`001-cognitive-surrender.md`), and its date
+- the current page inverted, like a selected file
+- the section description at the bottom
+
+A root strip along the bottom reads `~/etiennenel.com/  index  about.md  rss.xml`. The burger turns into an ✕
+and inverts while the menu is open. Esc closes it and returns focus to the burger. The page behind stops scrolling.
+Closed, the menu is `inert`. Under 860px the halves stack (technical on top). Reduced motion: no slide.
 
 ---
 
@@ -122,8 +146,9 @@ Every page opens with a stage that draws one big shape out of small characters.
 | Page | Shape | Drawn with | Script |
 |---|---|---|---|
 | Home | **I1S binary 3D mark** | `1` / `0` | `assets/js/mark.js` |
-| Post | its number, e.g. `001` | `e,` | `assets/js/field.js` |
-| Posts list | `e,e` | `e,` | `field.js` |
+| Post | its number: `001` (editorial) or `T-001` (technical) | `e,` | `assets/js/field.js` |
+| Technical section | `</>` | `e,` | `field.js` |
+| Editorial section | `e,e` | `e,` | `field.js` |
 | About | `e,` | `e,` | `field.js` |
 | 404 | `404` | `e,` | `field.js` |
 
@@ -194,8 +219,8 @@ numbers underlined · function names 500 · punctuation `--mute`.
   `WORDS, UNASSISTED`, `AI ASSISTANCE: NONE`.
 - Readouts state facts about the page or the writing (counts, dates, time). No marketing lines.
 - Home and About intro text comes from Etienne's own About page. Don't write new bio copy.
-- Post titles: `NNN - Title` (e.g. `001 - Cognitive Surrender`). The number is display-critical.
-  It becomes the post's glyph field and its index column.
+- Post titles: `NNN - Title` for editorial (e.g. `001 - Cognitive Surrender`), `T-NNN - Title` for technical.
+  The number is display-critical: it becomes the post's glyph field and its index column.
 
 ---
 
@@ -214,13 +239,15 @@ numbers underlined · function names 500 · punctuation `--mute`.
 | Path | What |
 |---|---|
 | `assets/css/main.css` | all styles. Tokens at the top |
-| `assets/js/field.js` | `e,` glyph fields, panel collapse, the clock |
+| `assets/js/field.js` | `e,` glyph fields, panel collapse, the clock, the file menu |
 | `assets/js/mark.js` | binary I1S mark (home) |
 | `layouts/_default/baseof.html` | page shell, loads CSS and field.js |
 | `layouts/index.html` | home: stage, INFO, READOUT, index |
 | `layouts/_default/single.html` | posts and pages: short stage, title panel, article, pager |
 | `layouts/_default/list.html`, `layouts/404.html` | posts index, not found |
 | `layouts/partials/bar.html` | fixed bottom bar |
+| `layouts/partials/nav.html` | the file-system menu |
+| `content/en/technical/`, `content/en/editorial/` | the two sections. `_index.md` holds each one's glyph, description and `ai` flag |
 | `layouts/partials/rows.html` | index rows |
 | `layouts/partials/fn/*.html` | helpers: post number, title without number, post list |
 | `static/favicon.svg` | inverted `e,` favicon |

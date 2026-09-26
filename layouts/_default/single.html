@@ -1,5 +1,6 @@
 {{ define "main" }}
 {{ $isPost := in site.Params.mainSections .Section }}
+{{ $withAI := and $isPost .CurrentSection.Params.ai }}
 {{ $no := partial "fn/number.html" . }}
 {{ $name := partial "fn/name.html" . }}
 <section class="stage short" aria-label="Visualizer">
@@ -7,7 +8,7 @@
   <div class="panels">
     <section class="panel title" id="info">
       <div class="panel-head caps">
-        <h2>{{ if $isPost }}Post{{ with $no }} {{ . }}{{ end }}{{ else }}{{ .Title }}{{ end }}</h2>
+        <h2>{{ if $isPost }}{{ .CurrentSection.Title }}{{ with $no }} {{ . }}{{ end }}{{ else }}{{ .Title }}{{ end }}</h2>
         <button type="button" aria-expanded="true" aria-controls="title-body" data-toggle>−</button>
       </div>
       <div class="panel-body" id="title-body">
@@ -17,7 +18,7 @@
           <dt>Written</dt><dd><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time></dd>
           <dt>Words</dt><dd>{{ lang.FormatNumber 0 .WordCount }}</dd>
           <dt>Reading time</dt><dd>{{ .ReadingTime }} min</dd>
-          <dt>AI assistance</dt><dd>None</dd>
+          <dt>AI assistance</dt><dd>{{ cond $withAI "Used" "None" }}</dd>
         </dl>
         {{ end }}
       </div>

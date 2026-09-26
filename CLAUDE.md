@@ -7,8 +7,9 @@ its rules, update `DESIGN.md` in the same change.
 
 ## Rules that matter most
 
-- **The words are Etienne's.** Posts are written without AI. Never write, rewrite or "fix" post prose, and never write
-  new bio copy. Only correct spelling or grammar when Etienne asks in that request.
+- **Two sections.** `technical/` docs are written with AI (Claude may draft and edit them when asked).
+  `editorial/` pieces are **handwritten, no AI**: never write, rewrite or "fix" editorial prose, and never write new bio
+  copy. Only correct spelling or grammar when Etienne asks in that request.
 - **Black and white only.** No hues anywhere. Emphasis comes from weight, size, inversion and outline (DESIGN.md §2).
 - **Pushing to `main` deploys to etiennenel.com** within about 30s. Work on a branch and ask before merging or pushing to main.
 - New posts: use the `etiennenel-post` skill (`~/.claude/skills/etiennenel-post`).

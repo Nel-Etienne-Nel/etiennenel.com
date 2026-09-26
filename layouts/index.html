@@ -1,6 +1,8 @@
 {{ define "main" }}
 {{ $posts := partial "fn/posts.html" . }}
-{{ $words := 0 }}{{ range $posts }}{{ $words = add $words .WordCount }}{{ end }}
+{{ $tech := where site.RegularPages "Section" "technical" }}
+{{ $edit := where site.RegularPages "Section" "editorial" }}
+{{ $words := 0 }}{{ range $edit }}{{ $words = add $words .WordCount }}{{ end }}
 <section class="stage" aria-label="Visualizer">
   <canvas class="field" data-mark="i1s" role="img" aria-label="The Industry One Solutions mark in 3D, drawn in blinking ones and zeros"></canvas>
 
@@ -12,7 +14,7 @@
       </div>
       <div class="panel-body" id="info-body">
         <p class="big">I'm Etienne. I work in AI every day. I build with it, I teach it, and I believe in it. But I've noticed it doing something to my thinking that I don't like.</p>
-        <p>So once a week I sit down and write without it. No polish, no assistance, no safety net. Just an idea and whatever I can make of it. Some of it will be rough. That's the point.</p>
+        <p>So I split what I write in two: the technical docs, which explain how things work, I write with AI; the editorial pieces I write by hand, without AI doing it for me. No polish, no assistance, no safety net. Just an idea and whatever I can make of it. Some of it will be rough. That's the point.</p>
         <p class="more caps"><a href="{{ "/about/" | relURL }}">More about this →</a></p>
         <p class="fine caps">Every character up there is a 1 or a 0.</p>
       </div>
@@ -26,7 +28,8 @@
       <div class="panel-body" id="now-body">
         <dl class="readout caps">
           <dt>Bits on screen</dt><dd id="count">0</dd>
-          <dt>Posts published</dt><dd>{{ len $posts }}</dd>
+          <dt>Technical</dt><dd>{{ len $tech }}</dd>
+          <dt>Editorial</dt><dd>{{ len $edit }}</dd>
           <dt>Words, unassisted</dt><dd>{{ lang.FormatNumber 0 $words }}</dd>
           {{ with index $posts 0 }}<dt>Last written</dt><dd>{{ .Date.Format site.Params.dateFormat }}</dd>{{ end }}
           <dt>Your local time</dt><dd id="clock">--:--:--</dd>
@@ -41,9 +44,21 @@
 <section class="index" id="posts" aria-labelledby="idx">
   <div class="index-head">
     <h2 id="idx">Etienne Nel</h2>
-    <p class="caps">Posts. Handwritten, no AI.</p>
+    <p class="caps">Technical, written with AI. Editorial, handwritten, no AI.</p>
   </div>
-  {{ partial "rows.html" $posts }}
+  <div class="split">
+    {{ range slice "technical" "editorial" }}
+    {{ with site.GetPage (printf "/%s" .) }}
+    <section class="col" aria-labelledby="col-{{ .Section }}">
+      <div class="col-head caps">
+        <h3 id="col-{{ .Section }}"><a href="{{ .RelPermalink }}">{{ .Section }}/</a></h3>
+        <span>{{ cond .Params.ai "Written with AI" "Handwritten, no AI" }}</span>
+      </div>
+      {{ partial "rows.html" .RegularPages }}
+    </section>
+    {{ end }}
+    {{ end }}
+  </div>
 </section>
 {{ $mark := resources.Get "js/mark.js" | minify | fingerprint }}
 <script src="{{ $mark.RelPermalink }}" integrity="{{ $mark.Data.Integrity }}" defer></script>

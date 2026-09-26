@@ -1,6 +1,6 @@
 ---
 title: "001 - Cognitive Surrender"
-aliases: ["/posts/001-cognative-surrender/"]
+aliases: ["/posts/001-cognative-surrender/", "/posts/001-cognitive-surrender/"]
 date: 2026-05-31
 ---
 

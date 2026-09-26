@@ -5,12 +5,13 @@ Black and white; every character in the header field is an `e,`.
 
 ## Write a post
 
-```bash
-hugo new content/en/posts/002-title-here.md
-```
+Two sections, numbered separately:
 
-Start the title with the post number (`002 - Title Here`). The number becomes the giant
-glyph drawn in the post's header field and the index column on the home page.
+- `content/en/editorial/002-title-here.md`, titled `002 - Title Here` (handwritten, no AI)
+- `content/en/technical/t-001-title-here.md`, titled `T-001 - Title Here` (written with AI)
+
+The number becomes the giant glyph drawn in the post's header field and its index column.
+The `etiennenel-post` Claude skill does all of this for you.
 Set `draft = false` when it's ready. An optional `description` in front matter replaces
 the auto-summary on the index.
 

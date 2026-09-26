@@ -8,6 +8,7 @@
   <main id="main">
     {{ block "main" . }}{{ end }}
   </main>
+  {{ partial "nav.html" . }}
   {{ partial "bar.html" . }}
   {{ $js := resources.Get "js/field.js" | minify | fingerprint }}
   <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>

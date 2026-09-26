@@ -1,0 +1,38 @@
+{{- /* The burger menu: the site as a file system. Technical slides in from the left,
+       editorial from the right. Context: the current page. */ -}}
+{{ $here := .RelPermalink }}
+<nav class="fs" id="fs" aria-label="Site" inert>
+  <div class="fs-halves">
+    {{ range $i, $name := slice "technical" "editorial" }}
+    {{ with site.GetPage (printf "/%s" $name) }}
+    {{ $pages := .RegularPages }}
+    <section class="fs-half {{ $name }}" aria-labelledby="fs-{{ $name }}">
+      <div class="fs-head caps">
+        <a id="fs-{{ $name }}" href="{{ .RelPermalink }}"{{ if eq $here .RelPermalink }} aria-current="page"{{ end }}>{{ $name }}/</a>
+        <span class="meta">{{ len $pages }} {{ cond (eq (len $pages) 1) "file" "files" }} · {{ cond .Params.ai "written with AI" "written by hand" }}</span>
+      </div>
+      <div class="tree">
+        {{ range $j, $p := $pages }}
+        {{ $last := eq (add $j 1) (len $pages) }}
+        <a class="r{{ if eq $here $p.RelPermalink }} here{{ end }}" href="{{ $p.RelPermalink }}"{{ if eq $here $p.RelPermalink }} aria-current="page"{{ end }}>
+          <span class="t" aria-hidden="true">{{ cond $last "└── " "├── " }}</span>
+          <span class="name">{{ $p.File.LogicalName }}</span>
+          <span class="date caps">{{ $p.Date.Format "2 Jan" }}</span>
+        </a>
+        {{ else }}
+        <p class="r empty"><span class="t" aria-hidden="true">└── </span><span class="name">(empty)</span></p>
+        {{ end }}
+      </div>
+      <p class="fs-desc">{{ .Params.description }}</p>
+    </section>
+    {{ end }}
+    {{ end }}
+  </div>
+  <div class="fs-root caps">
+    <span class="meta">~/etiennenel.com/</span>
+    <a href="{{ "/" | relURL }}"{{ if eq $here ("/" | relURL) }} aria-current="page"{{ end }}>index</a>
+    <a href="{{ "/about/" | relURL }}"{{ if eq $here ("/about/" | relURL) }} aria-current="page"{{ end }}>about.md</a>
+    <a href="{{ "/index.xml" | relURL }}">rss.xml</a>
+    <span class="meta hint">Esc to close</span>
+  </div>
+</nav>

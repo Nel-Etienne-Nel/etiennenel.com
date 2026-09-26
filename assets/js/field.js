@@ -25,6 +25,23 @@
     tick(); setInterval(tick, 1000);
   }
 
+  // ---- file-system menu (burger in the bar) ----
+  const burger = document.querySelector('.burger'), fs = $('fs');
+  if (burger && fs) {
+    const setMenu = open => {
+      burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? 'Close the file menu' : 'Open the file menu');
+      fs.classList.toggle('open', open);
+      fs.inert = !open;
+      document.body.classList.toggle('fs-lock', open);
+      if (open) (fs.querySelector('.r.here, [aria-current]') || fs.querySelector('a')).focus({ preventScroll: true });
+    };
+    burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && fs.classList.contains('open')) { setMenu(false); burger.focus(); }
+    });
+  }
+
   if (!cv) return;
   const ctx = cv.getContext('2d');
   const countEl = $('count');

@@ -1,13 +1,17 @@
 <footer class="bar">
   <a class="mark" href="{{ "/" | relURL }}" aria-label="Home">e,</a>
+  <button type="button" class="burger" aria-expanded="false" aria-controls="fs" aria-label="Open the file menu">
+    <span class="lines" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="caps lbl">Files</span>
+  </button>
   <a class="who caps" href="{{ "/about/" | relURL }}">
     <span class="play" aria-hidden="true"><svg viewBox="0 0 8 8"><path d="M1 0l7 4-7 4z"/></svg></span>
-    <span>Etienne Nel<br><span class="sub">Writes without AI</span></span>
+    <span>Etienne Nel<br><span class="sub">Technical · Editorial</span></span>
   </a>
   <div class="spacer" aria-hidden="true"></div>
   <a class="word" href="{{ "/" | relURL }}">ETIENNE</a>
   <div class="ctas caps">
     <a class="pill ghost" href="{{ "/about/" | relURL }}">About</a>
-    <a class="pill solid" href="{{ "/posts/" | relURL }}">Read e,e</a>
+    <a class="pill solid" href="{{ "/" | relURL }}#posts">Read e,e</a>
   </div>
 </footer>

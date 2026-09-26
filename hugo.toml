@@ -21,8 +21,8 @@ title = "etiennenel.com"
 
 [params]
   author = "Etienne Nel"
-  description = "Once a week, Etienne writes without AI. An experiment in thinking a thought all the way through."
-  mainSections = ['posts']
+  description = "Etienne Nel. Technical docs on how things work, written with AI, and editorial pieces written by hand, without it."
+  mainSections = ['technical', 'editorial']   # technical is written with AI; editorial by hand
   dateFormat = "2 Jan 2006"
   rssFeedDescription = "summary"
   # The giant glyph the home-page field draws. Posts draw their number instead.
