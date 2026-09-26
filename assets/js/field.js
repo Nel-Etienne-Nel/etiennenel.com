@@ -2,7 +2,7 @@
 // (the canvas's data-glyph). The cursor opens a clear lens; the +/− buttons
 // rescale the grid.
 (() => {
-  const cv = document.querySelector('canvas.field');
+  const cv = document.querySelector('canvas.field:not([data-mark])');   // the home page's mark has its own script
   const $ = id => document.getElementById(id);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const FONT = '"Courier Prime", "Courier New", monospace';

@@ -2,7 +2,7 @@
 {{ $posts := partial "fn/posts.html" . }}
 {{ $words := 0 }}{{ range $posts }}{{ $words = add $words .WordCount }}{{ end }}
 <section class="stage" aria-label="Visualizer">
-  <canvas class="field" data-glyph="{{ site.Params.glyph | default "e," }}" aria-hidden="true"></canvas>
+  <canvas class="field" data-mark="i1s" role="img" aria-label="The Industry One Solutions mark in 3D, drawn in blinking ones and zeros"></canvas>
 
   <div class="panels">
     <section class="panel info" id="info">
@@ -14,7 +14,7 @@
         <p class="big">I'm Etienne. I work in AI every day. I build with it, I teach it, and I believe in it. But I've noticed it doing something to my thinking that I don't like.</p>
         <p>So once a week I sit down and write without it. No polish, no assistance, no safety net. Just an idea and whatever I can make of it. Some of it will be rough. That's the point.</p>
         <p class="more caps"><a href="{{ "/about/" | relURL }}">More about this →</a></p>
-        <p class="fine caps">Every character on this screen is an e. Move over it to look through.</p>
+        <p class="fine caps">Every character up there is a 1 or a 0.</p>
       </div>
     </section>
 
@@ -25,8 +25,7 @@
       </div>
       <div class="panel-body" id="now-body">
         <dl class="readout caps">
-          <dt>Characters on screen</dt><dd id="count">0</dd>
-          <dt>Density</dt><dd id="dens">9.3</dd>
+          <dt>Bits on screen</dt><dd id="count">0</dd>
           <dt>Posts published</dt><dd>{{ len $posts }}</dd>
           <dt>Words, unassisted</dt><dd>{{ lang.FormatNumber 0 $words }}</dd>
           {{ with index $posts 0 }}<dt>Last written</dt><dd>{{ .Date.Format site.Params.dateFormat }}</dd>{{ end }}
@@ -37,10 +36,6 @@
     </section>
   </div>
 
-  <div class="zoom" role="group" aria-label="Density">
-    <button type="button" id="zin" aria-label="More characters">+</button>
-    <button type="button" id="zout" aria-label="Fewer characters">−</button>
-  </div>
 </section>
 
 <section class="index" id="posts" aria-labelledby="idx">
@@ -50,4 +45,6 @@
   </div>
   {{ partial "rows.html" $posts }}
 </section>
+{{ $mark := resources.Get "js/mark.js" | minify | fingerprint }}
+<script src="{{ $mark.RelPermalink }}" integrity="{{ $mark.Data.Integrity }}" defer></script>
 {{ end }}
