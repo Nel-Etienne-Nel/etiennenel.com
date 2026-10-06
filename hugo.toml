@@ -28,3 +28,7 @@ title = "etiennenel.com"
   rssFeedDescription = "summary"
   # The giant glyph the home-page field draws. Posts draw their number instead.
   glyph = "e,"
+  # Contact address, stored in two halves and joined in the browser so the page
+  # source never holds it whole. hello@ forwards via Cloudflare Email Routing.
+  contactUser = "hello"
+  contactDomain = "etiennenel.com"

@@ -25,6 +25,20 @@
     tick(); setInterval(tick, 1000);
   }
 
+  // ---- contact address: joined here so the HTML never holds it whole ----
+  document.querySelectorAll('.contact-row[data-u]').forEach(row => {
+    const addr = row.dataset.u + '@' + row.dataset.d;
+    const link = row.querySelector('[data-mailto]'), out = row.querySelector('.addr'), btn = row.querySelector('[data-copy-addr]');
+    link.href = 'mailto:' + addr;
+    out.textContent = addr;
+    btn.hidden = false;
+    btn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(addr); btn.textContent = 'Copied'; }
+      catch (e) { const r = document.createRange(); r.selectNodeContents(out); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selected'; }
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1400);
+    });
+  });
+
   // ---- Copy buttons on code, terminal and tree blocks ----
   const copyText = (kind, blk) => {
     if (kind === 'cmds') return [...blk.querySelectorAll('.cmd')].map(c => c.textContent).join('\n');

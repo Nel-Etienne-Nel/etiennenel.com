@@ -1,0 +1,15 @@
+{{- /* Contact panel at the end of every post and page. The address is assembled by
+       field.js from data-u / data-d, so it never appears whole in the HTML. */ -}}
+{{- with site.Params.contactUser -}}
+<section class="contact panel" aria-labelledby="contact-h">
+  <div class="panel-head caps"><h2 id="contact-h">Contact</h2></div>
+  <div class="panel-body">
+    <p class="big">Want to contact me? Send me a mail.</p>
+    <div class="contact-row" data-u="{{ . }}" data-d="{{ site.Params.contactDomain }}">
+      <a class="pill solid caps" href="{{ "/about/" | relURL }}" data-mailto>Send me a mail</a>
+      <span class="addr"><noscript>{{ . }} [at] {{ site.Params.contactDomain }}</noscript></span>
+      <button type="button" class="copy" data-copy-addr hidden>Copy</button>
+    </div>
+  </div>
+</section>
+{{- end -}}

@@ -124,6 +124,11 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
   who ("Etienne Nel / Technical · Editorial", links About) · flexible spacer · ETIENNE wordmark ·
   About (outline pill) · Read e,e (solid pill, jumps to the home index).
 
+- **Contact panel:** closes every post and page, inside the text column (`partials/contact.html`). Caps "Contact"
+  header, "Want to contact me? Send me a mail.", a solid **Send me a mail** pill (mailto), the address as
+  text and a Copy button. The address lives in `hugo.toml` as `contactUser` + `contactDomain` and is joined by
+  `field.js`, so the HTML never holds it whole. Without JavaScript it reads `hello [at] etiennenel.com`.
+
 ### File menu (navigation)
 
 The burger opens the site **as a file system**. The screen splits in two: `technical/` slides in from the
