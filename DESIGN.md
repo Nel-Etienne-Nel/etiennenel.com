@@ -71,7 +71,7 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 | Caps labels | Plex 500 | 10.5–11px | `text-transform: uppercase`, letter-spacing .08em |
 | Fine print | Plex | 9.5px | caps, `--mute` |
 | Panel lead (`.big`) | Plex | 13px / 1.55 | |
-| **Prose** | Plex | **15px / 1.8** | letter-spacing 0, max 66ch |
+| **Prose** | Plex | **15px / 1.8** | letter-spacing 0, max 96ch (Etienne's call: wide, closer to the edges) |
 | Prose H2 / H3 / H4 | Courier Prime 700 | 26 / 20 / 16px, lh 1.2 | `text-wrap: balance` |
 | Post title (panel) | Courier Prime 700 | clamp(26px, 3.6vw, 40px) / 1.05 | |
 | Index row title | Courier Prime 700 | clamp(18px, 2.2vw, 24px) / 1.2 | |
@@ -88,8 +88,8 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 | Token / rule | Value |
 |---|---|
 | Side gutter `--gutter` | 24px (16px under 860px) |
-| Content width | 1100px max (index, article, pager) |
-| Reading width | 66ch |
+| Content width | 1440px max (index, article, pager) |
+| Reading width | 96ch (index summaries 80ch) |
 | Bottom bar `--bar-h` | 52px + safe-area inset, fixed |
 | Breakpoints | **860px** (panels stack, bar condenses), **520px** (bar trims further) |
 | Corners | **square everywhere.** Only pills (999px) and the round play icon are rounded |
