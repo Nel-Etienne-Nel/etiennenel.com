@@ -45,7 +45,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* with JS the film is pinned for --travel screens while scrolling plays the story, then dissolves into the
    stage (intro.js). Without JS, or with reduced motion, there is no track and the stage rolls over a still frame. */
 .intro-track { height: 0; }
-.opening.scrub { --travel: 2.75; }
+.opening.scrub { --travel: 4.5; }
 .opening.scrub .intro-track { height: calc(var(--travel) * (100svh - var(--bar-h) - env(safe-area-inset-bottom, 0px))); }
 .intro.merge { z-index: 2; background: transparent; pointer-events: none; }
 .intro.merge .cue { pointer-events: auto; }

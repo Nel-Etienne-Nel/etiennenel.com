@@ -430,9 +430,9 @@ function render(t) {
 }
 
 /* ---------- playback: scroll plays the story ----------
-   The film is pinned while you scroll through .intro-track (about 2.75 screens). Scroll position maps to
-   story time through KEYS, so each stage holds for a beat; the shown time eases toward it in rAF, which
-   keeps wheel flicks and touch flings smooth. Past the track, one more screen dissolves the film into the
+   The film is pinned while you scroll through .intro-track (about 4.5 screens). Scroll position maps to
+   story time through KEYS, so each stage holds for a beat; the shown time eases toward it in rAF at a capped
+   speed, so wheel flicks and touch flings play through gently instead of jumping. Past the track, one more screen dissolves the film into the
    home stage: the bits drop out, the black thins, then the lines fade. */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const intro = cv.closest('.intro'), opening = cv.closest('.opening'), cue = intro && intro.querySelector('.cue');
@@ -446,13 +446,14 @@ function measure() { screen = cv.clientHeight || 1; travel = track ? track.offse
 function onScroll() {
   const y = window.scrollY;
   target = travel ? storyT(clamp(y / travel)) : 0;
-  p = clamp((y - travel) / screen);
+  p = clamp((y - travel) / (screen * 1.3));
   gone = sm(0, .75, p); bgA = 1 - sm(.1, .8, p);
   cv.style.opacity = String(1 - sm(.55, 1, p));
   if (cue) cue.style.opacity = String(1 - sm(0, .5, y / screen));
 }
 function frame() {
-  T += (target - T) * .12; if (Math.abs(target - T) < .002) T = target;
+  const step = (target - T) * .06, cap = .09;  // at most ~5.4 story seconds per real second
+  T += step > cap ? cap : step < -cap ? -cap : step; if (Math.abs(target - T) < .002) T = target;
   if (p < 1) render(T >= DUR ? 0 : T);
   requestAnimationFrame(frame);
 }

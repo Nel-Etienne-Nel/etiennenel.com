@@ -115,8 +115,8 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 ```
 
 - **Intro film (home):** `.intro` fills the first screen above the bar and is `position: sticky`. With JavaScript,
-  **scrolling plays the story**: the film is pinned over `.intro-track` (`--travel`: 2.75 screens) and scroll maps
-  to story time, each stage holding for a beat (`KEYS` in `intro.js`). Then one more screen **merges** it into the
+  **scrolling plays the story**: the film is pinned over `.intro-track` (`--travel`: 4.5 screens; Etienne found 2.75 too fast) and scroll maps
+  to story time, each stage holding for a beat (`KEYS` in `intro.js`). Then about 1.3 screens more **merge** it into the
   stage: the bits drop out, the black thins, the lines fade (Etienne's calls, 2026-10-10). Without JavaScript or
   with reduced motion there's no track: a still frame, and the stage rolls over it.
   It's black (`--film` / `--film-ink`) in **both** themes: it's a screen, not a page.
