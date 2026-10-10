@@ -112,7 +112,7 @@ const PINS = [], FAN = [];
 /* soil grains, bucketed by brightness */
 const NB = 8, GR = Array.from({ length: NB }, () => []);
 { const rG = RNG(3);
-  for (let i = 0; i < 4600; i++) {
+  for (let i = 0; i < 9000; i++) {
     const crumb = rG() < .3, x = lerp(-950, 950, rG()), y = crumb ? lerp(-4, 10, rG()) : lerp(0, 1150, rG());
     const s = crumb ? lerp(1.5, 4.2, rG()) : lerp(0.7, 2.8, rG());
     const b = (0.05 + 0.95 * Math.exp(-((x + 60) ** 2 + (y + 10) ** 2) / (2 * 190 * 190))) * lerp(.35, 1, rG());
@@ -128,11 +128,48 @@ if (!cv) return;
 const ctx = cv.getContext('2d');
 const NL = document.createElement('canvas'), nctx = NL.getContext('2d');
 let W = 1600, H = 900, U = 900, DPR = 1;
+/* ---------- binary layer: soil and seedling are drawn as 1s and 0s ----------
+   The soil and seedling render into a small canvas with one pixel per character cell; each lit
+   cell becomes a 1 or 0 whose grey follows that pixel's brightness (like the binary mark). */
+const SB = document.createElement('canvas'), sctx = SB.getContext('2d', { willReadFrequently: true });
+const ATL = document.createElement('canvas'), actx = ATL.getContext('2d');
+const LV = 12;  // grey levels in the glyph atlas
+let cw = 6, ch = 8, cols = 1, rows = 1, bits = new Uint8Array(1);
+function buildAtlas() {
+  ATL.width = cw * 2; ATL.height = ch * LV; actx.clearRect(0, 0, ATL.width, ATL.height);
+  actx.font = `700 ${(ch * 1.05).toFixed(1)}px "Courier Prime", "Courier New", monospace`;
+  actx.textAlign = 'center'; actx.textBaseline = 'middle';
+  for (let l = 1; l < LV; l++) { const g = Math.round(255 * l / (LV - 1)); actx.fillStyle = `rgb(${g},${g},${g})`;
+    for (let b = 0; b < 2; b++) actx.fillText(b ? '1' : '0', cw * b + cw / 2, ch * l + ch * .54); }
+}
+function buildGrid() {
+  cw = Math.max(4, Math.round(6 * DPR)); ch = Math.round(cw * 1.3);
+  cols = Math.ceil(W / cw); rows = Math.ceil(H / ch); SB.width = cols; SB.height = rows;
+  bits = new Uint8Array(cols * rows); for (let i = 0; i < bits.length; i++) bits[i] = Math.random() < .5 ? 1 : 0;
+  buildAtlas();
+}
+function bitLayer() {  // clears the small canvas and returns it, set up to draw in full-size coordinates
+  sctx.setTransform(1, 0, 0, 1, 0, 0); sctx.globalCompositeOperation = 'source-over';
+  sctx.fillStyle = '#000'; sctx.fillRect(0, 0, cols, rows); sctx.setTransform(1 / cw, 0, 0, 1 / ch, 0, 0);
+  return sctx;
+}
+function drawBits(c) {
+  const d = sctx.getImageData(0, 0, cols, rows).data;
+  for (let n = (bits.length * .004) | 0; n > 0; n--) bits[(Math.random() * bits.length) | 0] ^= 1;  // a slow blink
+  for (let j = 0, i = 0; j < rows; j++) for (let x = 0; x < cols; x++, i++) {
+    const p = i * 4, v = Math.max(d[p], d[p + 1], d[p + 2]) / 255;
+    if (v < .045) continue;
+    const l = Math.min(LV - 1, Math.round(Math.pow(v, .75) * (LV - 1)));
+    if (l > 0) c.drawImage(ATL, bits[i] * cw, l * ch, cw, ch, x * cw, j * ch, cw, ch);
+  }
+}
+
 function resize() {
   const r = cv.getBoundingClientRect(); DPR = Math.min(1.5, window.devicePixelRatio || 1);
   W = Math.max(2, Math.round(r.width * DPR)); H = Math.max(2, Math.round(r.height * DPR));
   cv.width = NL.width = W; cv.height = NL.height = H;
   U = Math.min(H, W * 1.2);  // scene scale: fit height, or width on tall phone screens
+  buildGrid();
 }
 
 /* ---------- camera ---------- */
@@ -284,30 +321,31 @@ function drawChip(c, k, X, Y, P, a) {
 function drawWorld(c, t, cam, o) {
   const P = pal(), k = U / 1000 * cam.s, X = x => W / 2 + (x - cam.x) * k, Y = y => H / 2 + (y - cam.y) * k;
   const m = o.under ? sm(6.2, 9.4, t) : 0, ra = o.ra * (1 - m), { T } = seedT(t);
+  const b = bitLayer();
   if (ra > .002) {
-    for (const b of BOKEH) { const x = X(b.x), y = Y(b.y), r = b.r * k, g = c.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, rgba(P.bokeh, b.a * ra)); g.addColorStop(1, rgba(P.bokeh, 0)); c.fillStyle = g; c.fillRect(x - r, y - r, 2 * r, 2 * r); }
-    const hz = c.createRadialGradient(X(-230), Y(-210), 0, X(-230), Y(-210), 300 * k);
-    hz.addColorStop(0, rgba(P.bokeh, .06 * ra)); hz.addColorStop(1, rgba(P.bokeh, 0)); c.fillStyle = hz; c.fillRect(0, 0, W, H);
+    for (const bk of BOKEH) { const x = X(bk.x), y = Y(bk.y), r = bk.r * k, g = b.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, rgba(P.bokeh, bk.a * 4 * ra)); g.addColorStop(1, rgba(P.bokeh, 0)); b.fillStyle = g; b.fillRect(x - r, y - r, 2 * r, 2 * r); }
     const top = Math.max(0, Y(0));
     if (top < H) {
-      const g = c.createLinearGradient(0, Y(0), 0, Y(340)); g.addColorStop(0, rgba(P.soil, .9 * ra)); g.addColorStop(1, rgba(P.soil, 0));
-      c.fillStyle = g; c.fillRect(0, top, W, H - top);
-      const pg = c.createRadialGradient(X(-50), Y(4), 0, X(-50), Y(4), 300 * k);
-      pg.addColorStop(0, rgba(mix(P.soil, P.grain, .5), .55 * ra)); pg.addColorStop(1, rgba(P.soil, 0)); c.fillStyle = pg; c.fillRect(0, top, W, H - top);
+      b.fillStyle = rgba([30, 30, 30], ra); b.fillRect(0, top, W, H - top);                     // every soil cell holds a bit
+      const g = b.createLinearGradient(0, Y(0), 0, Y(220)); g.addColorStop(0, rgba([70, 70, 70], ra)); g.addColorStop(1, rgba([70, 70, 70], 0));
+      b.fillStyle = g; b.fillRect(0, top, W, H - top);
+      const pg = b.createRadialGradient(X(-50), Y(4), 0, X(-50), Y(4), 320 * k);
+      pg.addColorStop(0, rgba([150, 150, 150], .7 * ra)); pg.addColorStop(1, rgba([150, 150, 150], 0)); b.fillStyle = pg; b.fillRect(0, top, W, H - top);
     }
     const y0 = cam.y - 500 / cam.s - 10, y1 = cam.y + 500 / cam.s + 10, xr = W / 2 / k + 10;
-    for (let bi = 0; bi < NB; bi++) { c.beginPath();
-      for (const g of GR[bi]) { if (g.y < y0 || g.y > y1 || Math.abs(g.x - cam.x) > xr) continue; const s = Math.max(.6 * DPR, g.s * k); c.rect(X(g.x) - s / 2, Y(g.y) - s / 2, s, s); }
-      c.fillStyle = rgba(mix([0, 0, 0], P.grain, (bi + 1) / NB), ra * .95); c.fill(); }
+    for (let bi = 0; bi < NB; bi++) { b.beginPath();
+      for (const g of GR[bi]) { if (g.y < y0 || g.y > y1 || Math.abs(g.x - cam.x) > xr) continue; const s = Math.max(cw * .8, g.s * k); b.rect(X(g.x) - s / 2, Y(g.y) - s / 2, s, s); }
+      b.fillStyle = rgba(mix([0, 0, 0], [230, 230, 230], (bi + 1) / NB), ra); b.fill(); }
   }
+  drawStem(b, X, Y, P, o.ra, T);
+  drawLeaf(b, leafMat(t, cam, false), P, o.ra);
+  drawLeaf(b, o.leafM || leafMat(t, cam, true), P, o.leafM ? o.leafA : o.ra);
+  drawBits(c);
   if (o.under) {
     const rA = sm(2.4, 4.6, t); if (rA > 0) drawRoots(c, t, k, X, Y, P, m, rA);
     const chA = sm(8.6, 10, t); if (chA > 0) drawChip(c, k, X, Y, P, chA);
   }
-  drawStem(c, X, Y, P, o.ra, T);
-  drawLeaf(c, leafMat(t, cam, false), P, o.ra);
-  drawLeaf(c, o.leafM || leafMat(t, cam, true), P, o.leafM ? o.leafA : o.ra);
   const v = c.createRadialGradient(W * .44, H * .46, H * .16, W * .5, H * .5, W * .78);
   v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.93)'); c.fillStyle = v; c.fillRect(0, 0, W, H);
 }
@@ -397,6 +435,7 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 resize();
+document.fonts && document.fonts.ready.then(buildAtlas);
 new ResizeObserver(() => { resize(); if (reduce) render(0); }).observe(cv);
 if (reduce) { render(0); document.fonts && document.fonts.ready.then(() => render(0)); }
 else requestAnimationFrame(frame);

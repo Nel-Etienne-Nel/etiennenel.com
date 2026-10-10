@@ -169,6 +169,9 @@ Every page opens with a stage that draws one big shape out of small characters.
   circuit traces → they converge into a taproot and a chip core → a moment of pure black → a network opens from
   one point → pulling back, it is the vein pattern of the seedling's leaf → back to the first frame exactly.
 - **Mono only** (greys on black). The source prompt asked for a green seedling and cyan glow; Etienne chose mono.
+- **The soil and the seedling are made of bits:** a dense grid of Courier Prime `1`/`0` (6px cells), each cell's
+  grey taken from the lit scene underneath, with a slow blink. Every soil cell holds a bit. Roots, traces, the
+  chip and the network stay as lines so they read against the bits.
 - No text overlays, no logos, no sound. It stops drawing once the stage covers it.
 - Under `prefers-reduced-motion` it shows the still first frame.
 
