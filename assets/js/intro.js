@@ -429,27 +429,45 @@ function render(t) {
   }
 }
 
-/* ---------- playback ---------- */
-// Scrolling merges the film into the page: the bits drop out, the black thins, then the lines go,
-// and the home stage underneath shows through (CSS: .intro.merge sits above it, see main.css).
+/* ---------- playback: scroll plays the story ----------
+   The film is pinned while you scroll through .intro-track (about 2.75 screens). Scroll position maps to
+   story time through KEYS, so each stage holds for a beat; the shown time eases toward it in rAF, which
+   keeps wheel flicks and touch flings smooth. Past the track, one more screen dissolves the film into the
+   home stage: the bits drop out, the black thins, then the lines fade. */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const intro = cv.closest('.intro'), cue = intro && intro.querySelector('.cue');
-if (intro) intro.classList.add('merge');
-let t0 = performance.now(), p = 0;
+const intro = cv.closest('.intro'), opening = cv.closest('.opening'), cue = intro && intro.querySelector('.cue');
+const track = opening && opening.querySelector('.intro-track');
+// [share of the track, story seconds]: sapling · descent · bits to traces · taproot and core · black ·
+// expansion · network hold · pull back · settle
+const KEYS = [[0, 0], [.08, 1.9], [.26, 6.3], [.40, 9.2], [.50, 12.1], [.53, 12.9], [.62, 15.0], [.70, 16.0], [.90, 19.5], [1, 20]];
+const storyT = s => { for (let i = 1; i < KEYS.length; i++) if (s <= KEYS[i][0]) { const [a, ta] = KEYS[i - 1], [b, tb] = KEYS[i]; return lerp(ta, tb, (s - a) / (b - a)); } return DUR; };
+let travel = 0, screen = 1, target = 0, T = 0, p = 0;
+function measure() { screen = cv.clientHeight || 1; travel = track ? track.offsetHeight : 0; }
 function onScroll() {
-  p = clamp(window.scrollY / (cv.clientHeight || 1));
+  const y = window.scrollY;
+  target = travel ? storyT(clamp(y / travel)) : 0;
+  p = clamp((y - travel) / screen);
   gone = sm(0, .75, p); bgA = 1 - sm(.1, .8, p);
   cv.style.opacity = String(1 - sm(.55, 1, p));
-  if (cue) cue.style.opacity = String(1 - sm(0, .25, p));
+  if (cue) cue.style.opacity = String(1 - sm(0, .5, y / screen));
 }
-addEventListener('scroll', () => { onScroll(); if (reduce) render(0); }, { passive: true });
-function frame(now) {
-  if (p < 1) render(((now - t0) / 1000) % DUR);
+function frame() {
+  T += (target - T) * .12; if (Math.abs(target - T) < .002) T = target;
+  if (p < 1) render(T >= DUR ? 0 : T);
   requestAnimationFrame(frame);
 }
-resize(); onScroll();
+resize();
 document.fonts && document.fonts.ready.then(buildAtlas);
-new ResizeObserver(() => { resize(); onScroll(); if (reduce) render(0); }).observe(cv);
-if (reduce) { render(0); document.fonts && document.fonts.ready.then(() => render(0)); }
-else requestAnimationFrame(frame);
+if (reduce || !intro || !opening) {
+  // a still, settled frame and the normal page: no pinning, no dive
+  new ResizeObserver(() => { resize(); render(0); }).observe(cv);
+  render(0); document.fonts && document.fonts.ready.then(() => render(0));
+} else {
+  opening.classList.add('scrub'); intro.classList.add('merge');
+  measure(); onScroll(); T = target;
+  addEventListener('scroll', onScroll, { passive: true });
+  new ResizeObserver(() => { resize(); measure(); onScroll(); }).observe(cv);
+  if (cue) cue.addEventListener('click', e => { e.preventDefault(); window.scrollBy({ top: screen * .9, behavior: 'smooth' }); });
+  requestAnimationFrame(frame);
+}
 })();

@@ -114,10 +114,11 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 └───────────────────────────────────────────────┘
 ```
 
-- **Intro film (home):** `.intro` fills the first screen above the bar and is `position: sticky`. With JavaScript
-  it gets `.merge`, sits above the stage and **merges** into it as you scroll one screen: the bits drop out at
-  random, the black backdrop thins, then the lines fade, and the stage shows through (Etienne's call, 2026-10-10:
-  "merge rather than roll over"). Without JavaScript the stage (paper background, 1px top rule) rolls over it.
+- **Intro film (home):** `.intro` fills the first screen above the bar and is `position: sticky`. With JavaScript,
+  **scrolling plays the story**: the film is pinned over `.intro-track` (`--travel`: 2.75 screens) and scroll maps
+  to story time, each stage holding for a beat (`KEYS` in `intro.js`). Then one more screen **merges** it into the
+  stage: the bits drop out, the black thins, the lines fade (Etienne's calls, 2026-10-10). Without JavaScript or
+  with reduced motion there's no track: a still frame, and the stage rolls over it.
   It's black (`--film` / `--film-ink`) in **both** themes: it's a screen, not a page.
 - **Stage:** a canvas fills the stage. Panels float over it on desktop and stack below it under 860px.
 - **Panels:** `INFO` (360px, bottom-left), `READOUT` (260px, top-right), title panel (max 560px).
@@ -158,7 +159,7 @@ Every page opens with a stage that draws one big shape out of small characters.
 
 | Page | Shape | Drawn with | Script |
 |---|---|---|---|
-| Home | **I1S binary 3D mark** | `1` / `0` | `assets/js/mark.js` |
+| Home | **binary roots** | `1` / `0` spelling "Etienne" | `assets/js/roots.js` |
 | Post | its number: `001` (editorial) or `T-001` (technical) | `e,` | `assets/js/field.js` |
 | Technical section | `</>` | `e,` | `field.js` |
 | Editorial section | `e,e` | `e,` | `field.js` |
@@ -166,7 +167,7 @@ Every page opens with a stage that draws one big shape out of small characters.
 | 404 | `404` | `e,` | `field.js` |
 
 **Intro film: "Seed to Signal"** (Etienne's decisions, 2026-10-10; `assets/js/intro.js`, `canvas[data-intro]`)
-- A 20 s seamless loop, drawn live: a seedling in dark soil → the camera descends into its roots → pulses become
+- 20 s of story, played by scroll (not a timer), drawn live: a seedling in dark soil → the camera descends into its roots → pulses become
   bits (`01000101 01110100 01101001 01100101 01101110 01101110 01100101`, "Etienne") → the roots straighten into
   circuit traces → they converge into a taproot and a chip core → a moment of pure black → a network opens from
   one point → pulling back, it is the vein pattern of the seedling's leaf → back to the first frame exactly.
@@ -174,8 +175,8 @@ Every page opens with a stage that draws one big shape out of small characters.
 - **The soil and the seedling are made of bits:** a dense grid of Courier Prime `1`/`0` (6px cells), each cell's
   grey taken from the lit scene underneath, with a slow blink. Every soil cell holds a bit. Roots, traces, the
   chip and the network stay as lines so they read against the bits.
-- No text overlays, no logos, no sound. It stops drawing once the stage covers it.
-- Under `prefers-reduced-motion` it shows the still first frame.
+- No text overlays, no logos, no sound. It stops drawing once it has merged into the page.
+- Under `prefers-reduced-motion` it shows the still first frame and the page scrolls normally.
 
 **`e,` field rules** (Etienne's decisions, 2026-09-25)
 - Draw **only the glyph**. No drifting background, no wave, no size pulsing.
@@ -184,14 +185,15 @@ Every page opens with a stage that draws one big shape out of small characters.
 - The cursor opens a clear circular lens with a bold edge.
 - No density slider. The small +/− buttons on the stage are the only density control.
 
-**Binary mark rules** (locked 2026-09-26)
-- Geometry: exact polygons from `I1S/Brand Assets/Logo Variations/SVG Logos/Industry One Solutions Logo-07.svg`.
-- Oblique (cavalier) projection: fronts face the viewer, depth runs **up-right at 45°**.
-- **Depth 0.21 · outline 1.2 · 7px cells.** Fronts use full-size digits; sides use smaller digits scaled by light
-  (light from the upper left).
-- An empty keyline (outline) is cut around every front face so the shapes never merge.
-- **Motion: blinking only.** About 12 times a second, 4% of the bits flip. No cursor effects, no sway, no rotation.
-- Reusable copies (JS, SVG, PNG) live in the brand library: `I1S/Brand Assets/Logo Variations/Binary 3D Mark/`.
+**Binary roots** (Etienne's call, 2026-10-10; replaced the binary I1S mark on the home stage)
+- A root system: one taproot from the top centre (under the film's seedling stem), branching down and out
+  into tapering, slightly lopsided roots that thin to single characters at the tips.
+- Digits run along each root in the "Etienne" sequence `01000101 01110100 01101001 01100101 01101110 01101110
+  01100101` and drift slowly down the roots (sap), about 6 steps a second. Courier Prime 700, 7px cells, `--ink`.
+- Procedural from `seed` (fixed: 1871), `depth`, `branches`, `spread`. **`growth`** (0 to 1) reveals the same
+  tree a little at a time; it lives in `hugo.toml` as `rootsGrowth` (0.6 now). Raise it as things grow.
+- "Bits on screen" counts the characters drawn.
+- The retired I1S binary mark still lives in the brand library: `I1S/Brand Assets/Logo Variations/Binary 3D Mark/`.
 
 **Shared field rules**
 - Fields read `--ink` from CSS, so they flip with dark mode.
@@ -237,8 +239,8 @@ numbers underlined · function names 500 · punctuation `--mute`.
 ## 7. Motion
 
 - Motion lives in the stage and the home intro film only. The content area and bottom bar are still.
-- Allowed: field fill-in (once), cursor lens (`e,` fields), bit blinking (mark), the intro film's loop and its
-  scroll dissolve into the stage (home only; Etienne's calls, 2026-10-10).
+- Allowed: field fill-in (once), cursor lens (`e,` fields), the roots' slow sap flow, the intro film played by scroll and its
+  merge into the stage (home only; Etienne's calls, 2026-10-10).
 - Not allowed: scroll-triggered reveals, parallax, hover animations beyond a colour/background change,
   looping decorative motion.
 - Content is never hidden waiting for an animation. The page is fully readable at rest.
@@ -273,7 +275,7 @@ numbers underlined · function names 500 · punctuation `--mute`.
 |---|---|
 | `assets/css/main.css` | all styles. Tokens at the top |
 | `assets/js/field.js` | `e,` glyph fields, panel collapse, the clock, the file menu |
-| `assets/js/mark.js` | binary I1S mark (home) |
+| `assets/js/roots.js` | binary roots on the home stage |
 | `assets/js/intro.js` | intro film "Seed to Signal" (home) |
 | `layouts/_default/baseof.html` | page shell, loads CSS and field.js |
 | `layouts/index.html` | home: intro film, stage, INFO, READOUT, index |
