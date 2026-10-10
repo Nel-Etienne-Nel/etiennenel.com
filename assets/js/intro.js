@@ -134,7 +134,8 @@ let W = 1600, H = 900, U = 900, DPR = 1;
 const SB = document.createElement('canvas'), sctx = SB.getContext('2d', { willReadFrequently: true });
 const ATL = document.createElement('canvas'), actx = ATL.getContext('2d');
 const LV = 12;  // grey levels in the glyph atlas
-let cw = 6, ch = 8, cols = 1, rows = 1, bits = new Uint8Array(1);
+let cw = 6, ch = 8, cols = 1, rows = 1, bits = new Uint8Array(1), drop = new Float32Array(1);
+let gone = 0, bgA = 1;  // scroll dissolve: share of bits dropped, and how much of the black backdrop is left
 function buildAtlas() {
   ATL.width = cw * 2; ATL.height = ch * LV; actx.clearRect(0, 0, ATL.width, ATL.height);
   actx.font = `700 ${(ch * 1.05).toFixed(1)}px "Courier Prime", "Courier New", monospace`;
@@ -145,7 +146,8 @@ function buildAtlas() {
 function buildGrid() {
   cw = Math.max(4, Math.round(6 * DPR)); ch = Math.round(cw * 1.3);
   cols = Math.ceil(W / cw); rows = Math.ceil(H / ch); SB.width = cols; SB.height = rows;
-  bits = new Uint8Array(cols * rows); for (let i = 0; i < bits.length; i++) bits[i] = Math.random() < .5 ? 1 : 0;
+  bits = new Uint8Array(cols * rows); drop = new Float32Array(cols * rows);
+  for (let i = 0; i < bits.length; i++) { bits[i] = Math.random() < .5 ? 1 : 0; drop[i] = Math.random(); }
   buildAtlas();
 }
 function bitLayer() {  // clears the small canvas and returns it, set up to draw in full-size coordinates
@@ -158,7 +160,7 @@ function drawBits(c) {
   for (let n = (bits.length * .004) | 0; n > 0; n--) bits[(Math.random() * bits.length) | 0] ^= 1;  // a slow blink
   for (let j = 0, i = 0; j < rows; j++) for (let x = 0; x < cols; x++, i++) {
     const p = i * 4, v = Math.max(d[p], d[p + 1], d[p + 2]) / 255;
-    if (v < .045) continue;
+    if (v < .045 || drop[i] < gone) continue;
     const l = Math.min(LV - 1, Math.round(Math.pow(v, .75) * (LV - 1)));
     if (l > 0) c.drawImage(ATL, bits[i] * cw, l * ch, cw, ch, x * cw, j * ch, cw, ch);
   }
@@ -347,7 +349,7 @@ function drawWorld(c, t, cam, o) {
     const chA = sm(8.6, 10, t); if (chA > 0) drawChip(c, k, X, Y, P, chA);
   }
   const v = c.createRadialGradient(W * .44, H * .46, H * .16, W * .5, H * .5, W * .78);
-  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.93)'); c.fillStyle = v; c.fillRect(0, 0, W, H);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, `rgba(0,0,0,${(.93 * bgA).toFixed(3)})`); c.fillStyle = v; c.fillRect(0, 0, W, H);
 }
 
 /* ---------- the network: expansion, then the leaf ---------- */
@@ -410,7 +412,8 @@ function drawDust(t, P) {
 /* ---------- frame ---------- */
 function render(t) {
   const P = pal();
-  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = `rgba(0,0,0,${bgA.toFixed(3)})`; ctx.fillRect(0, 0, W, H);
   if (t < 12.15) {
     const cam = camAt(t);
     drawWorld(ctx, t, cam, { ra: 1, under: true });
@@ -418,7 +421,7 @@ function render(t) {
     if (cg > 0) { const k = U / 1000 * cam.s; ctx.globalCompositeOperation = 'lighter';
       glowDot(ctx, W / 2 + (0 - cam.x) * k, H / 2 + (CHIPY - cam.y) * k, (40 * DPR + 24 * k) * (1 + 3 * sm(11.2, 11.9, t)), P.glowC, cg);
       ctx.globalCompositeOperation = 'source-over'; }
-    const bl = sm(11.75, 12.12, t); if (bl > 0) { ctx.fillStyle = `rgba(0,0,0,${bl})`; ctx.fillRect(0, 0, W, H); }
+    const bl = sm(11.75, 12.12, t); if (bl > 0) { ctx.fillStyle = `rgba(0,0,0,${bl * bgA})`; ctx.fillRect(0, 0, W, H); }
   } else if (t >= 12.5) {
     if (t >= 17.9) drawWorld(ctx, t, CA, { ra: sm(18.3, 19.8, t), under: false, leafM: netM(t), leafA: sm(18.0, 19.5, t) });
     drawDust(t, P);
@@ -427,16 +430,26 @@ function render(t) {
 }
 
 /* ---------- playback ---------- */
-// Plays while the film is on screen; the home page slides over it (CSS sticky), so stop once it is covered.
+// Scrolling merges the film into the page: the bits drop out, the black thins, then the lines go,
+// and the home stage underneath shows through (CSS: .intro.merge sits above it, see main.css).
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let t0 = performance.now();
+const intro = cv.closest('.intro'), cue = intro && intro.querySelector('.cue');
+if (intro) intro.classList.add('merge');
+let t0 = performance.now(), p = 0;
+function onScroll() {
+  p = clamp(window.scrollY / (cv.clientHeight || 1));
+  gone = sm(0, .75, p); bgA = 1 - sm(.1, .8, p);
+  cv.style.opacity = String(1 - sm(.55, 1, p));
+  if (cue) cue.style.opacity = String(1 - sm(0, .25, p));
+}
+addEventListener('scroll', () => { onScroll(); if (reduce) render(0); }, { passive: true });
 function frame(now) {
-  if (window.scrollY < cv.clientHeight) render(((now - t0) / 1000) % DUR);
+  if (p < 1) render(((now - t0) / 1000) % DUR);
   requestAnimationFrame(frame);
 }
-resize();
+resize(); onScroll();
 document.fonts && document.fonts.ready.then(buildAtlas);
-new ResizeObserver(() => { resize(); if (reduce) render(0); }).observe(cv);
+new ResizeObserver(() => { resize(); onScroll(); if (reduce) render(0); }).observe(cv);
 if (reduce) { render(0); document.fonts && document.fonts.ready.then(() => render(0)); }
 else requestAnimationFrame(frame);
 })();

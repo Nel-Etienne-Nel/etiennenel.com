@@ -42,6 +42,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .cue { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; font-size: 11px; text-decoration: none; color: var(--film-ink); }
 .cue::after { content: ""; width: 1px; height: 28px; background: currentColor; }
 .opening > .stage { z-index: 1; background: var(--paper); border-top: 1px solid var(--ink); }
+/* with JS the film sits above the stage and dissolves into it on scroll (intro.js); without JS the stage rolls over it */
+.intro.merge { z-index: 2; background: transparent; pointer-events: none; }
+.intro.merge .cue { pointer-events: auto; }
+.intro.merge + .stage { border-top: 0; }
 
 /* ---------- stage (canvas field + floating panels) ---------- */
 .stage { position: relative; height: clamp(420px, 78vh, 820px); overflow: hidden; border-bottom: 1px solid var(--ink); }

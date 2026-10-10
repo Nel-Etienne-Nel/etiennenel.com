@@ -100,7 +100,7 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 
 ```
 ┌───────────────────────────────────────────────┐
-│ INTRO FILM (home only): black, full screen,   │  sticky: the stage slides up over it
+│ INTRO FILM (home only): black, full screen,   │  sticky: dissolves into the stage on scroll
 │ "Scroll" cue at the bottom                    │
 ├───────────────────────────────────────────────┤
 │ STAGE: canvas glyph field + floating panels   │  home: clamp(420px, 78vh, 820px)
@@ -114,9 +114,11 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 └───────────────────────────────────────────────┘
 ```
 
-- **Intro film (home):** `.intro` fills the first screen above the bar and is `position: sticky`, so the home stage
-  (paper background, 1px top rule) slides over it like a curtain. Pure CSS, no scroll script. It's black
-  (`--film` / `--film-ink`) in **both** themes: it's a screen, not a page.
+- **Intro film (home):** `.intro` fills the first screen above the bar and is `position: sticky`. With JavaScript
+  it gets `.merge`, sits above the stage and **merges** into it as you scroll one screen: the bits drop out at
+  random, the black backdrop thins, then the lines fade, and the stage shows through (Etienne's call, 2026-10-10:
+  "merge rather than roll over"). Without JavaScript the stage (paper background, 1px top rule) rolls over it.
+  It's black (`--film` / `--film-ink`) in **both** themes: it's a screen, not a page.
 - **Stage:** a canvas fills the stage. Panels float over it on desktop and stack below it under 860px.
 - **Panels:** `INFO` (360px, bottom-left), `READOUT` (260px, top-right), title panel (max 560px).
   Header strip: caps label left, `−`/`+` collapse button right.
@@ -235,8 +237,8 @@ numbers underlined · function names 500 · punctuation `--mute`.
 ## 7. Motion
 
 - Motion lives in the stage and the home intro film only. The content area and bottom bar are still.
-- Allowed: field fill-in (once), cursor lens (`e,` fields), bit blinking (mark), the intro film's loop and the
-  sticky curtain over it (home only; Etienne's call, 2026-10-10).
+- Allowed: field fill-in (once), cursor lens (`e,` fields), bit blinking (mark), the intro film's loop and its
+  scroll dissolve into the stage (home only; Etienne's calls, 2026-10-10).
 - Not allowed: scroll-triggered reveals, parallax, hover animations beyond a colour/background change,
   looping decorative motion.
 - Content is never hidden waiting for an animation. The page is fully readable at rest.
