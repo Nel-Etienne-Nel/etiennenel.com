@@ -100,6 +100,9 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 
 ```
 ┌───────────────────────────────────────────────┐
+│ INTRO FILM (home only): black, full screen,   │  sticky: the stage slides up over it
+│ "Scroll" cue at the bottom                    │
+├───────────────────────────────────────────────┤
 │ STAGE: canvas glyph field + floating panels   │  home: clamp(420px, 78vh, 820px)
 │  ┌PANEL┐                          ┌PANEL┐     │  other pages: clamp(300px, 52vh, 520px)
 │  └─────┘                          └─────┘     │
@@ -111,6 +114,9 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 └───────────────────────────────────────────────┘
 ```
 
+- **Intro film (home):** `.intro` fills the first screen above the bar and is `position: sticky`, so the home stage
+  (paper background, 1px top rule) slides over it like a curtain. Pure CSS, no scroll script. It's black
+  (`--film` / `--film-ink`) in **both** themes: it's a screen, not a page.
 - **Stage:** a canvas fills the stage. Panels float over it on desktop and stack below it under 860px.
 - **Panels:** `INFO` (360px, bottom-left), `READOUT` (260px, top-right), title panel (max 560px).
   Header strip: caps label left, `−`/`+` collapse button right.
@@ -156,6 +162,15 @@ Every page opens with a stage that draws one big shape out of small characters.
 | Editorial section | `e,e` | `e,` | `field.js` |
 | About | `e,` | `e,` | `field.js` |
 | 404 | `404` | `e,` | `field.js` |
+
+**Intro film: "Seed to Signal"** (Etienne's decisions, 2026-10-10; `assets/js/intro.js`, `canvas[data-intro]`)
+- A 20 s seamless loop, drawn live: a seedling in dark soil → the camera descends into its roots → pulses become
+  bits (`01000101 01110100 01101001 01100101 01101110 01101110 01100101`, "Etienne") → the roots straighten into
+  circuit traces → they converge into a taproot and a chip core → a moment of pure black → a network opens from
+  one point → pulling back, it is the vein pattern of the seedling's leaf → back to the first frame exactly.
+- **Mono only** (greys on black). The source prompt asked for a green seedling and cyan glow; Etienne chose mono.
+- No text overlays, no logos, no sound. It stops drawing once the stage covers it.
+- Under `prefers-reduced-motion` it shows the still first frame.
 
 **`e,` field rules** (Etienne's decisions, 2026-09-25)
 - Draw **only the glyph**. No drifting background, no wave, no size pulsing.
@@ -216,8 +231,9 @@ numbers underlined · function names 500 · punctuation `--mute`.
 
 ## 7. Motion
 
-- Motion lives in the stage only. The content area and bottom bar are still.
-- Allowed: field fill-in (once), cursor lens (`e,` fields), bit blinking (mark).
+- Motion lives in the stage and the home intro film only. The content area and bottom bar are still.
+- Allowed: field fill-in (once), cursor lens (`e,` fields), bit blinking (mark), the intro film's loop and the
+  sticky curtain over it (home only; Etienne's call, 2026-10-10).
 - Not allowed: scroll-triggered reveals, parallax, hover animations beyond a colour/background change,
   looping decorative motion.
 - Content is never hidden waiting for an animation. The page is fully readable at rest.
@@ -253,8 +269,9 @@ numbers underlined · function names 500 · punctuation `--mute`.
 | `assets/css/main.css` | all styles. Tokens at the top |
 | `assets/js/field.js` | `e,` glyph fields, panel collapse, the clock, the file menu |
 | `assets/js/mark.js` | binary I1S mark (home) |
+| `assets/js/intro.js` | intro film "Seed to Signal" (home) |
 | `layouts/_default/baseof.html` | page shell, loads CSS and field.js |
-| `layouts/index.html` | home: stage, INFO, READOUT, index |
+| `layouts/index.html` | home: intro film, stage, INFO, READOUT, index |
 | `layouts/_default/single.html` | posts and pages: short stage, title panel, article, pager |
 | `layouts/_default/list.html`, `layouts/404.html` | posts index, not found |
 | `layouts/partials/bar.html` | fixed bottom bar |
