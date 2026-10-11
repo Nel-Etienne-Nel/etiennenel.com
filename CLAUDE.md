@@ -12,7 +12,10 @@ its rules, update `DESIGN.md` in the same change.
   copy. Only correct spelling or grammar when Etienne asks in that request.
 - **Black and white only.** No hues anywhere. Emphasis comes from weight, size, inversion and outline (DESIGN.md §2).
 - **Pushing to `main` deploys to etiennenel.com** within about 30s. Work on a branch and ask before merging or pushing to main.
-- New posts: use the `etiennenel-post` skill (`~/.claude/skills/etiennenel-post`).
+- **Posts are written in Obsidian, not here.** The source is `~/Documents/Etienne/EtienneOBS/Personal/Writing/`
+  (editorial as `NNN - Title.md`, technical in `Technical/` as `T-NNN - Title.md`). `content/en/editorial/` and
+  `content/en/technical/` are copies made on publish, so don't edit posts here: the next sync overwrites them. Use the
+  `etiennenel-post` skill (`~/.claude/skills/etiennenel-post`) to sync and publish.
 
 ## Commands
 
