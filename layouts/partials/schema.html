@@ -1,0 +1,29 @@
+{{- /* JSON-LD: the site and its author on the home page; each post as an article by that author. */ -}}
+{{- $p := .page }}
+{{- $home := site.Home.Permalink }}
+{{- $person := dict "@type" "Person" "@id" (print $home "#person") "name" site.Params.author "url" $home "sameAs" site.Params.sameAs }}
+{{- $site := dict "@type" "WebSite" "@id" (print $home "#website") "url" $home "name" site.Params.author "description" site.Params.description "inLanguage" "en-GB" "author" (dict "@id" (print $home "#person")) }}
+{{- $data := dict }}
+{{- if $p.IsHome }}
+  {{- $data = dict "@context" "https://schema.org" "@graph" (slice $site $person) }}
+{{- else if and $p.IsPage (in site.Params.mainSections $p.Section) }}
+  {{- $art := dict
+      "@type" (cond (eq $p.Section "technical") "TechArticle" "BlogPosting")
+      "headline" (partial "fn/name.html" $p)
+      "description" .desc
+      "url" $p.Permalink
+      "mainEntityOfPage" $p.Permalink
+      "datePublished" ($p.Date.Format "2006-01-02T15:04:05Z07:00")
+      "dateModified" ($p.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+      "author" (dict "@id" (print $home "#person"))
+      "publisher" (dict "@id" (print $home "#person"))
+      "image" .img
+      "inLanguage" "en-GB"
+      "articleSection" ($p.Section | title)
+      "wordCount" $p.WordCount
+      "isPartOf" (dict "@id" (print $home "#website")) }}
+  {{- $data = dict "@context" "https://schema.org" "@graph" (slice $art $person $site) }}
+{{- end }}
+{{- with $data }}
+<script type="application/ld+json">{{ . | jsonify | safeJS }}</script>
+{{- end }}

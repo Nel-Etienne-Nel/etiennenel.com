@@ -1,15 +1,48 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-{{- $title := cond .IsHome site.Title (printf "%s · %s" .Title site.Title) }}
-{{- $desc := cond .IsHome site.Params.description (.Description | default .Summary | plainify | truncate 160) }}
+{{- /* Titles lead with what the page is and end with the author's name. Posts drop their number
+       ("T-001 - "); a post can set seoTitle in front matter to use searchable words. */}}
+{{- $title := "" }}
+{{- if .IsHome }}{{ $title = site.Params.homeTitle }}
+{{- else }}{{ $title = printf "%s · %s" (.Params.seoTitle | default (partial "fn/name.html" .)) site.Params.author }}{{ end }}
+{{- /* Description: front matter, else the opening text cut at the last full sentence that fits 160 characters. */}}
+{{- $desc := "" }}
+{{- if .IsHome }}{{ $desc = site.Params.description }}
+{{- else if .Description }}{{ $desc = .Description }}
+{{- else }}
+  {{- $s := .Summary | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace }}
+  {{- if gt (len $s) 160 }}
+    {{- with findRE `^.{50,157}[.!?](\s|$)` $s 1 }}{{ $s = index . 0 | strings.TrimSpace }}{{ else }}{{ $s = truncate 157 $s }}{{ end }}
+  {{- end }}
+  {{- $desc = $s }}
+{{- end }}
+{{- $post := and .IsPage (in site.Params.mainSections .Section) }}
+{{- $img := site.Params.ogImage | absURL }}
 <title>{{ $title }}</title>
 <meta name="description" content="{{ $desc }}">
 <meta name="author" content="{{ site.Params.author }}">
 <link rel="canonical" href="{{ .Permalink }}">
+<meta property="og:site_name" content="{{ site.Params.author }}">
+<meta property="og:locale" content="en_GB">
 <meta property="og:title" content="{{ $title }}">
 <meta property="og:description" content="{{ $desc }}">
 <meta property="og:url" content="{{ .Permalink }}">
-<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:type" content="{{ if $post }}article{{ else }}website{{ end }}">
+<meta property="og:image" content="{{ $img }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ site.Params.ogImageAlt }}">
+{{- if $post }}
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+<meta property="article:author" content="{{ site.Params.author }}">
+<meta property="article:section" content="{{ .Section | title }}">
+{{- end }}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $title }}">
+<meta name="twitter:description" content="{{ $desc }}">
+<meta name="twitter:image" content="{{ $img }}">
+{{ partial "schema.html" (dict "page" . "desc" $desc "img" $img) }}
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
