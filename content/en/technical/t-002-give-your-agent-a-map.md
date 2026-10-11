@@ -2,6 +2,8 @@
 title: "T-002 - Give your agent a map"
 date: 2026-10-11
 vault_source: "T-002.2 - Give your agent a map.md"
+seoTitle: "Give your agent a map: CLAUDE.md and context files"
+description: "Every agent session starts blank. How I give Claude Code a map with CLAUDE.md and context files, so it finds the right file without searching."
 ---
 
 Why does an AI agent spend the start of every session poking around my folders as if it's never seen them? Because it hasn't. Every session starts with an empty context window: no memory of yesterday, no idea where anything is. [T-001](/technical/t-001-a-wiki-that-claude-maintains/) was about where the knowledge lives. This one is about getting the agent to the right file without making it search, and why the obvious fixes don't work.

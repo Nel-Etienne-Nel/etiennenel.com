@@ -8,7 +8,7 @@
       <span class="no">{{ $no | default "—" }}</span>
       <div>
         <h3>{{ partial "fn/name.html" . }}</h3>
-        <p class="dek">{{ .Description | default .Summary | plainify | truncate 140 }}</p>
+        <p class="dek">{{ .Description | default .Summary | plainify | truncate 170 }}</p>
       </div>
       <span class="meta caps"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time><br>{{ .ReadingTime }} min</span>
     </a>

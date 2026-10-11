@@ -1,6 +1,9 @@
 ---
 title: "T-001 - A Wiki That Claude Maintains"
 date: 2026-09-26
+seoTitle: "Karpathy's LLM Wiki in Obsidian, Maintained by Claude"
+description: "How I use Karpathy's LLM Wiki pattern with Claude Code: Claude compiles my notes into an Obsidian wiki and keeps it current. Why it works, and how to set it up."
+vault_source: "T-001 - A Wiki That Claude Maintains.md"
 ---
 
 Most of what I know about my own projects doesn't live in my head any more. It lives in Obsidian, in wikis that Claude writes and I read. This post covers the idea behind that, why I work this way, and how to set up the same thing with a Claude Code plugin I've published.
