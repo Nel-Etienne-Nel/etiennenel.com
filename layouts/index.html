@@ -3,7 +3,14 @@
 {{ $tech := where site.RegularPages "Section" "technical" }}
 {{ $edit := where site.RegularPages "Section" "editorial" }}
 {{ $words := 0 }}{{ range $edit }}{{ $words = add $words .WordCount }}{{ end }}
-<section class="stage" aria-label="Visualizer">
+<div class="opening">
+<section class="intro" aria-label="Intro">
+  <canvas data-intro role="img" aria-label="A seedling in dark soil. The camera descends into its roots, which carry the binary for Etienne and straighten into circuit traces, run into a chip, then open into a network that turns out to be the veins of the seedling's leaf."></canvas>
+  <a class="cue caps" href="#home">Scroll</a>
+</section>
+<div class="intro-track" aria-hidden="true"></div>
+
+<section class="stage" id="home" aria-label="Visualizer">
   <canvas class="field" data-mark="i1s" role="img" aria-label="The Industry One Solutions mark in 3D, drawn in blinking ones and zeros"></canvas>
 
   <div class="panels">
@@ -41,6 +48,7 @@
   </div>
 
 </section>
+</div>
 
 <section class="index" id="posts" aria-labelledby="idx">
   <div class="index-head">
@@ -61,6 +69,8 @@
     {{ end }}
   </div>
 </section>
+{{ $intro := resources.Get "js/intro.js" | minify | fingerprint }}
+<script src="{{ $intro.RelPermalink }}" integrity="{{ $intro.Data.Integrity }}" defer></script>
 {{ $mark := resources.Get "js/mark.js" | minify | fingerprint }}
 <script src="{{ $mark.RelPermalink }}" integrity="{{ $mark.Data.Integrity }}" defer></script>
 {{ end }}
