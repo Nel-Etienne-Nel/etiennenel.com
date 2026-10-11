@@ -11,7 +11,7 @@
 <div class="intro-track" aria-hidden="true"></div>
 
 <section class="stage" id="home" aria-label="Visualizer">
-  <canvas class="field" data-mark="roots" data-growth="{{ site.Params.rootsGrowth | default 0.6 }}" role="img" aria-label="A root system drawn in ones and zeros that spell Etienne"></canvas>
+  <canvas class="field" data-mark="i1s" role="img" aria-label="The Industry One Solutions mark in 3D, drawn in blinking ones and zeros"></canvas>
 
   <div class="panels">
     <section class="panel info" id="info">
@@ -70,6 +70,6 @@
 </section>
 {{ $intro := resources.Get "js/intro.js" | minify | fingerprint }}
 <script src="{{ $intro.RelPermalink }}" integrity="{{ $intro.Data.Integrity }}" defer></script>
-{{ $roots := resources.Get "js/roots.js" | minify | fingerprint }}
-<script src="{{ $roots.RelPermalink }}" integrity="{{ $roots.Data.Integrity }}" defer></script>
+{{ $mark := resources.Get "js/mark.js" | minify | fingerprint }}
+<script src="{{ $mark.RelPermalink }}" integrity="{{ $mark.Data.Integrity }}" defer></script>
 {{ end }}
