@@ -1,22 +1,18 @@
 /* etiennenel.com: black & white, everything is an e, */
 
 :root {
-  --paper: #ffffff;
-  --ink: #000000;
-  --mute: #6f6f6f;
-  --soft: rgba(0, 0, 0, .06);
+  --paper: #000000;     /* dark only: the site is always black */
+  --ink: #ffffff;
+  --mute: #9c9c9c;
+  --soft: rgba(255, 255, 255, .08);
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --glyph: "Courier Prime", "Courier New", Courier, monospace;
-  --film: #000000;      /* the intro film is black in both themes */
+  --film: #000000;      /* the intro film is black too */
   --film-ink: #ffffff;
   --bar-h: 52px;
   --gutter: 24px;
-  color-scheme: light;
+  color-scheme: dark;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --paper: #000000; --ink: #ffffff; --mute: #9c9c9c; --soft: rgba(255, 255, 255, .08); color-scheme: dark; }
-}
-:root[data-theme="dark"] { --paper: #000000; --ink: #ffffff; --mute: #9c9c9c; --soft: rgba(255, 255, 255, .08); color-scheme: dark; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }

@@ -37,16 +37,16 @@ interface is monochrome, monospace and brutalist: hairline boxes, capital-letter
 
 ## 2. Colour
 
-Pure black and white, swapped for dark mode. One grey for secondary text. That's all.
+White on black, always (dark only since 2026-10-19). One grey for secondary text. That's all.
 
-| Token | Light | Dark | Use |
-|---|---|---|---|
-| `--paper` | `#ffffff` | `#000000` | page background, panel fill |
-| `--ink` | `#000000` | `#ffffff` | text, 1px rules, glyph fields, inverted fills |
-| `--mute` | `#6f6f6f` | `#9c9c9c` | secondary text, labels, metadata |
-| `--soft` | `rgba(0,0,0,.06)` | `rgba(255,255,255,.08)` | hover band, highlighted code lines, inline code |
+| Token | Value | Use |
+|---|---|---|
+| `--paper` | `#000000` | page background, panel fill |
+| `--ink` | `#ffffff` | text, 1px rules, glyph fields, inverted fills |
+| `--mute` | `#9c9c9c` | secondary text, labels, metadata |
+| `--soft` | `rgba(255,255,255,.08)` | hover band, highlighted code lines, inline code |
 
-- Dark mode follows the visitor's system setting (`prefers-color-scheme`). There is no toggle.
+- There is no light mode and no toggle: the site ignores the visitor's system setting.
 - **Never** introduce a hue: not for links, errors, success, syntax or diagrams. Links are underlined.
 - Inversion (ink background, paper text) is a signal, used sparingly: the `e,` tile in the bar,
   the solid pill button, a selected tab, the Warning callout header, the terminal block.
@@ -119,7 +119,7 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
   to story time, each stage holding for a beat (`KEYS` in `intro.js`). Then about 1.3 screens more **merge** it into the
   stage: the bits drop out, the black thins, the lines fade (Etienne's calls, 2026-10-10). Without JavaScript or
   with reduced motion there's no track: a still frame, and the stage rolls over it.
-  It's black (`--film` / `--film-ink`) in **both** themes: it's a screen, not a page.
+  It's black (`--film` / `--film-ink`), like the rest of the site.
 - **Stage:** a canvas fills the stage. Panels float over it on desktop and stack below it under 860px.
 - **Panels:** `INFO` (360px, bottom-left), `READOUT` (260px, top-right), title panel (max 560px).
   Header strip: caps label left, `−`/`+` collapse button right.
@@ -195,7 +195,7 @@ Every page opens with a stage that draws one big shape out of small characters.
 - Reusable copies (JS, SVG, PNG) live in the brand library: `I1S/Brand Assets/Logo Variations/Binary 3D Mark/`.
 
 **Shared field rules**
-- Fields read `--ink` from CSS, so they flip with dark mode.
+- Fields read `--ink` from CSS.
 - They pause when scrolled out of view.
 - Under `prefers-reduced-motion`, fields render still: no fill-in, no blink.
 
@@ -263,7 +263,7 @@ numbers underlined · function names 500 · punctuation `--mute`.
 - Visible focus: 2px `--ink` outline, 2px offset. A skip link goes to `#main`.
 - Decorative canvases are `aria-hidden`. The home mark canvas has `role="img"` and a label.
 - Panels collapse with a real `<button>` carrying `aria-expanded` / `aria-controls`.
-- Contrast: ink on paper is 21:1. `--mute` on paper is ≥ 4.5:1 in both themes.
+- Contrast: ink on paper is 21:1. `--mute` on paper is ≥ 4.5:1.
 - Nothing relies on colour alone, by design.
 
 ---
