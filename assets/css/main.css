@@ -32,20 +32,17 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .skip { position: absolute; left: -9999px; }
 .skip:focus { left: 16px; top: 16px; z-index: 20; background: var(--paper); border: 1px solid var(--ink); padding: 6px 10px; }
 
-/* ---------- intro film (home): sticks while the rest of the opening slides over it ---------- */
+/* ---------- intro (home): the binary seedling, sticky while it dissolves into the stage ---------- */
 .intro { position: sticky; top: 0; z-index: 0; height: calc(100svh - var(--bar-h) - env(safe-area-inset-bottom, 0px)); min-height: 360px; overflow: hidden; background: var(--film); color: var(--film-ink); }
 .intro canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .cue { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; font-size: 11px; text-decoration: none; color: var(--film-ink); }
 .cue::after { content: ""; width: 1px; height: 28px; background: currentColor; }
 .opening > .stage { z-index: 1; background: var(--paper); border-top: 1px solid var(--ink); }
-/* with JS the film is pinned for --travel screens while scrolling plays the story, then dissolves into the
-   stage (intro.js). Without JS, or with reduced motion, there is no track and the stage rolls over a still frame. */
-.intro-track { height: 0; }
-.opening.scrub { --travel: 4.5; }
-.opening.scrub .intro-track { height: calc(var(--travel) * (100svh - var(--bar-h) - env(safe-area-inset-bottom, 0px))); }
+/* with JS the intro sits above the stage and dissolves into it over one screen of scrolling (intro.js).
+   Without JS, or with reduced motion, the stage rolls over a still picture. */
 .intro.merge { z-index: 2; background: transparent; pointer-events: none; }
 .intro.merge .cue { pointer-events: auto; }
-.opening.scrub > .stage { border-top: 0; }
+.intro.merge ~ .stage { border-top: 0; }
 
 /* ---------- stage (canvas field + floating panels) ---------- */
 .stage { position: relative; height: clamp(420px, 78vh, 820px); overflow: hidden; border-bottom: 1px solid var(--ink); }

@@ -100,7 +100,7 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 
 ```
 ┌───────────────────────────────────────────────┐
-│ INTRO FILM (home only): black, full screen,   │  sticky: dissolves into the stage on scroll
+│ INTRO (home only): binary seedling, full      │  sticky: dissolves into the stage on scroll
 │ "Scroll" cue at the bottom                    │
 ├───────────────────────────────────────────────┤
 │ STAGE: canvas glyph field + floating panels   │  home: clamp(420px, 78vh, 820px)
@@ -114,12 +114,10 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 └───────────────────────────────────────────────┘
 ```
 
-- **Intro film (home):** `.intro` fills the first screen above the bar and is `position: sticky`. With JavaScript,
-  **scrolling plays the story**: the film is pinned over `.intro-track` (`--travel`: 4.5 screens; Etienne found 2.75 too fast) and scroll maps
-  to story time, each stage holding for a beat (`KEYS` in `intro.js`). Then about 1.3 screens more **merge** it into the
-  stage: the bits drop out, the black thins, the lines fade (Etienne's calls, 2026-10-10). Without JavaScript or
-  with reduced motion there's no track: a still frame, and the stage rolls over it.
-  It's black (`--film` / `--film-ink`), like the rest of the site.
+- **Intro (home):** `.intro` fills the first screen above the bar and is `position: sticky`. With JavaScript it
+  gets `.merge`, sits above the stage and **dissolves into it over one screen of scrolling**: the bits drop out,
+  the black thins, then the canvas fades. Without JavaScript or with reduced motion, the stage rolls over a still
+  picture. Black (`--film` / `--film-ink`).
 - **Stage:** a canvas fills the stage. Panels float over it on desktop and stack below it under 860px.
 - **Panels:** `INFO` (360px, bottom-left), `READOUT` (260px, top-right), title panel (max 560px).
   Header strip: caps label left, `−`/`+` collapse button right.
@@ -166,24 +164,15 @@ Every page opens with a stage that draws one big shape out of small characters.
 | About | `e,` | `e,` | `field.js` |
 | 404 | `404` | `e,` | `field.js` |
 
-**Intro film: "Seed to Signal"** (Etienne's decisions, 2026-10-10; `assets/js/intro.js`, `canvas[data-intro]`)
-- 20 s of story, played by scroll (not a timer), drawn live: a seedling in dark soil → the camera descends into its roots → pulses become
-  bits (`01000101 01110100 01101001 01100101 01101110 01101110 01100101`, "Etienne") → the roots straighten into
-  circuit traces → they converge into a taproot and a chip core → a moment of pure black → a network opens from
-  one point → pulling back, it is the vein pattern of the seedling's leaf → back to the first frame exactly.
-- **Mono only** (greys on black). The source prompt asked for a green seedling and cyan glow; Etienne chose mono.
-- **The soil and the seedling are made of bits:** a dense grid of Courier Prime `1`/`0` (6px cells), each cell's
-  grey taken from the lit scene underneath, with a slow blink. Every soil cell holds a bit. Roots, traces, the
-  chip and the network stay as lines so they read against the bits.
-- No text overlays, no logos, no sound. It stops drawing once it has merged into the page.
-- Under `prefers-reduced-motion` it shows the still first frame and the page scrolls normally.
-
-**`e,` field rules** (Etienne's decisions, 2026-09-25)
-- Draw **only the glyph**. No drifting background, no wave, no size pulsing.
-- Full-size `e,` inside the shape, smaller ones along its edge so the outline stays crisp.
-- Diagonal fill-in from the top-left corner on load, about 1.2s.
-- The cursor opens a clear circular lens with a bold edge.
-- No density slider. The small +/− buttons on the stage are the only density control.
+**Intro: the binary seedling** (Etienne's call, 2026-10-22: "just the plant and the binary base"; `assets/js/intro.js`,
+`canvas[data-intro]`)
+- A seedling in dark soil, both drawn as a dense grid of Courier Prime `1`/`0` (6px cells), each cell's grey taken
+  from the lit scene underneath. Every soil cell holds a bit.
+- **The soil thins out toward the bottom of the screen** (`FADE` in `intro.js`), so the base runs into the page.
+- Motion: a slow blink and a gentle sway, nothing else. No camera moves, no story, no text, no logos.
+- It replaced the 2026-10-10 "Seed to Signal" film (roots → circuit traces → chip → network → leaf), which is in git
+  history if it's ever wanted back.
+- Under `prefers-reduced-motion` it's a still picture.
 
 **Binary mark rules** (locked 2026-09-26)
 - Geometry: exact polygons from `I1S/Brand Assets/Logo Variations/SVG Logos/Industry One Solutions Logo-07.svg`.
@@ -237,9 +226,9 @@ numbers underlined · function names 500 · punctuation `--mute`.
 
 ## 7. Motion
 
-- Motion lives in the stage and the home intro film only. The content area and bottom bar are still.
-- Allowed: field fill-in (once), cursor lens (`e,` fields), bit blinking (mark), the intro film played by scroll and its
-  merge into the stage (home only; Etienne's calls, 2026-10-10).
+- Motion lives in the stage and the home intro only. The content area and bottom bar are still.
+- Allowed: field fill-in (once), cursor lens (`e,` fields), bit blinking (mark), the intro's blink and sway and
+  its scroll dissolve into the stage (home only; Etienne's calls, 2026-10-10 and 2026-10-22).
 - Not allowed: scroll-triggered reveals, parallax, hover animations beyond a colour/background change,
   looping decorative motion.
 - Content is never hidden waiting for an animation. The page is fully readable at rest.
@@ -275,9 +264,9 @@ numbers underlined · function names 500 · punctuation `--mute`.
 | `assets/css/main.css` | all styles. Tokens at the top |
 | `assets/js/field.js` | `e,` glyph fields, panel collapse, the clock, the file menu |
 | `assets/js/mark.js` | binary I1S mark (home) |
-| `assets/js/intro.js` | intro film "Seed to Signal" (home) |
+| `assets/js/intro.js` | intro: the binary seedling (home) |
 | `layouts/_default/baseof.html` | page shell, loads CSS and field.js |
-| `layouts/index.html` | home: intro film, stage, INFO, READOUT, index |
+| `layouts/index.html` | home: intro, stage, INFO, READOUT, index |
 | `layouts/_default/single.html` | posts and pages: short stage, title panel, article, pager |
 | `layouts/_default/list.html`, `layouts/404.html` | posts index, not found |
 | `layouts/partials/bar.html` | fixed bottom bar |
