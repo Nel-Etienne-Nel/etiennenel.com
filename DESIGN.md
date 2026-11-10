@@ -185,7 +185,7 @@ Every page opens with a stage that draws one big shape out of small characters.
 - Motion: prints in bottom-up once when first scrolled into view, then slow cloud and mist drift, water shimmer,
   falling petals, branch sway, lantern flicker. Redraws at 10 fps, pauses off screen, still under reduced motion.
 - Narrow screens crop the sides around the torii and Fuji (`FOCUS` in `scene.js`).
-- Caption panel bottom left (top left under 860px): `Mount Fuji · 35.36° N 138.73° E`.
+- No caption: Etienne removed it on 2026-11-10 (it covered the scene on phones).
 
 **Binary mark rules** (locked 2026-09-26)
 - Geometry: exact polygons from `I1S/Brand Assets/Logo Variations/SVG Logos/Industry One Solutions Logo-07.svg`.
