@@ -110,6 +110,8 @@ Two families, both monospace. Loaded from Google Fonts with system monospace fal
 │ CONTENT: index rows · article (220px aside +  │
 │ prose) · pager                                │
 ├───────────────────────────────────────────────┤
+│ SCENE: Fuji + torii engraved in 1s/0s        │  every page: clamp(300px, 28.75vw, 560px), 250px under 860px
+├───────────────────────────────────────────────┤
 │ e, │ ≡ FILES │ ▶ ETIENNE NEL │  (space)  │ ETIENNE │ ABOUT  READ E,E │  fixed bar
 └───────────────────────────────────────────────┘
 ```
@@ -174,6 +176,17 @@ Every page opens with a stage that draws one big shape out of small characters.
   history if it's ever wanted back.
 - Under `prefers-reduced-motion` it's a still picture.
 
+**Footer scene: Fuji and the torii** (Etienne's call, 2026-11-10; `assets/js/scene.js`, `partials/scene.html`,
+`canvas[data-scene]`)
+- Closes every page, after the content and above the bar: Mount Fuji over still water, a great torii standing in it,
+  a pagoda on the near hills, a low sun, a cherry branch (top left) and a lit stone lantern (bottom right).
+- An engraving in bits, ported from the I1S site's Giza footer: the scene is painted one pixel per cell (tone + hatch
+  direction) and each cell prints a Courier Prime `1`/`0` when its tone beats the hatch, in five greys of `--ink`.
+- Motion: prints in bottom-up once when first scrolled into view, then slow cloud and mist drift, water shimmer,
+  falling petals, branch sway, lantern flicker. Redraws at 10 fps, pauses off screen, still under reduced motion.
+- Narrow screens crop the sides around the torii and Fuji (`FOCUS` in `scene.js`).
+- Caption panel bottom left (top left under 860px): `Mount Fuji · 35.36° N 138.73° E`.
+
 **Binary mark rules** (locked 2026-09-26)
 - Geometry: exact polygons from `I1S/Brand Assets/Logo Variations/SVG Logos/Industry One Solutions Logo-07.svg`.
 - Oblique (cavalier) projection: fronts face the viewer, depth runs **up-right at 45°**.
@@ -226,9 +239,10 @@ numbers underlined · function names 500 · punctuation `--mute`.
 
 ## 7. Motion
 
-- Motion lives in the stage and the home intro only. The content area and bottom bar are still.
+- Motion lives in the stage, the home intro and the footer scene only. The content area and bottom bar are still.
 - Allowed: field fill-in (once), cursor lens (`e,` fields), bit blinking (mark), the intro's blink and sway and
-  its scroll dissolve into the stage (home only; Etienne's calls, 2026-10-10 and 2026-10-22).
+  its scroll dissolve into the stage (home only; Etienne's calls, 2026-10-10 and 2026-10-22), and the footer scene's
+  print-in and gentle drift (every page; Etienne's call, 2026-11-10).
 - Not allowed: scroll-triggered reveals, parallax, hover animations beyond a colour/background change,
   looping decorative motion.
 - Content is never hidden waiting for an animation. The page is fully readable at rest.
@@ -265,6 +279,7 @@ numbers underlined · function names 500 · punctuation `--mute`.
 | `assets/js/field.js` | `e,` glyph fields, panel collapse, the clock, the file menu |
 | `assets/js/mark.js` | binary I1S mark (home) |
 | `assets/js/intro.js` | intro: the binary seedling (home) |
+| `assets/js/scene.js`, `layouts/partials/scene.html` | footer scene: Fuji and the torii (every page) |
 | `layouts/_default/baseof.html` | page shell, loads CSS and field.js |
 | `layouts/index.html` | home: intro, stage, INFO, READOUT, index |
 | `layouts/_default/single.html` | posts and pages: short stage, title panel, article, pager |
