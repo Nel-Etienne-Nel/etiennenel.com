@@ -64,7 +64,7 @@ function buildAtlas() {
     for (let b = 0; b < 2; b++) actx.fillText(b ? '1' : '0', cw * b + cw / 2, ch * l + ch * .54); }
 }
 function buildGrid() {
-  cw = Math.max(4, Math.round(6 * DPR)); ch = Math.round(cw * 1.3);
+  cw = Math.max(3, Math.round(3 * DPR)); ch = Math.round(cw * 1.3);  // ~3px cells, the footer scene's grain
   cols = Math.ceil(W / cw); rows = Math.ceil(H / ch); SB.width = cols; SB.height = rows;
   bits = new Uint8Array(cols * rows); drop = new Float32Array(cols * rows); base = new Float32Array(rows);
   for (let i = 0; i < bits.length; i++) { bits[i] = Math.random() < .5 ? 1 : 0; drop[i] = Math.random(); }
@@ -78,7 +78,7 @@ function bitLayer() {  // clears the small canvas and returns it, set up to draw
 }
 function drawBits(c) {
   const d = sctx.getImageData(0, 0, cols, rows).data;
-  for (let n = (bits.length * .004) | 0; n > 0; n--) bits[(Math.random() * bits.length) | 0] ^= 1;  // a slow blink
+  for (let n = (bits.length * .003) | 0; n > 0; n--) bits[(Math.random() * bits.length) | 0] ^= 1;  // a slow blink
   for (let j = 0, i = 0; j < rows; j++) {
     const cut = Math.max(gone, base[j]);
     for (let x = 0; x < cols; x++, i++) {
@@ -91,7 +91,7 @@ function drawBits(c) {
 }
 
 function resize() {
-  const r = cv.getBoundingClientRect(); DPR = Math.min(1.5, window.devicePixelRatio || 1);
+  const r = cv.getBoundingClientRect(); DPR = Math.min(2, window.devicePixelRatio || 1);
   W = Math.max(2, Math.round(r.width * DPR)); H = Math.max(2, Math.round(r.height * DPR));
   cv.width = W; cv.height = H;
   U = Math.min(H, W * 1.2);  // scene scale: fit height, or width on tall phone screens
@@ -121,11 +121,18 @@ function drawLeaf(c, M, P, a) {
   rg.addColorStop(0, rgba(mix(P.leafL, [255, 255, 255], .3), .38 * a)); rg.addColorStop(1, rgba(P.leafL, 0));
   c.fillStyle = rg; c.fillRect(x0, y0, x1 - x0, y1 - y0);
   c.restore();
-  const lw = Math.max(.6 * DPR, M.sc * .005);
+  // veins are carved in as dark lines at least a cell wide (thinner detail vanishes in the bits), and a bright
+  // keyline traces the edge, like the footer engraving
+  const lw = Math.max(cw * .75, M.sc * .006);
+  c.save(); c.clip();
   for (const v of VEINS) {
     c.beginPath(); v.pts.forEach((p, i) => { const q = mapM(M, p[0], p[1]); i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]); });
-    c.strokeStyle = rgba(P.vein, (v.mid ? .42 : .3) * a); c.lineWidth = v.mid ? lw * 1.6 : lw; c.stroke();
+    c.strokeStyle = `rgba(0,0,0,${((v.mid ? .9 : .75) * a).toFixed(3)})`; c.lineWidth = v.mid ? lw * 1.5 : lw; c.lineCap = 'round'; c.stroke();
   }
+  c.restore();
+  c.beginPath();
+  OUT.forEach((p, i) => { const q = mapM(M, p[0], p[1]); i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]); });
+  c.closePath(); c.strokeStyle = rgba(P.vein, .9 * a); c.lineWidth = cw * .9; c.stroke();
 }
 function drawStem(c, X, Y, P, a, T) {
   if (a <= 0) return;
@@ -145,6 +152,7 @@ function drawStem(c, X, Y, P, a, T) {
   const g = c.createLinearGradient(X(T[0] - 8), 0, X(T[0] + 8), 0);
   g.addColorStop(0, rgba(P.stemL, a)); g.addColorStop(.5, rgba(mix(P.stemL, P.stemD, .55), a)); g.addColorStop(1, rgba(P.stemD, a));
   c.fillStyle = g; c.fill();
+  c.strokeStyle = rgba(P.vein, .55 * a); c.lineWidth = cw * .7; c.stroke();   // a lit edge on the stem
 }
 
 function render(t) {
@@ -187,7 +195,7 @@ function onScroll() {
   if (cue) cue.style.opacity = String(1 - sm(0, .3, p));
 }
 function frame(now) {
-  if (p < 1 && now - last > 33) { last = now; render((now - t0) / 1000); }  // ~30 fps is plenty for a blink
+  if (p < 1 && now - last > 40) { last = now; render((now - t0) / 1000); }  // ~25 fps is plenty for a blink
   requestAnimationFrame(frame);
 }
 resize();
