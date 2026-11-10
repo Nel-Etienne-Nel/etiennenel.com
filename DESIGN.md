@@ -168,7 +168,7 @@ Every page opens with a stage that draws one big shape out of small characters.
 
 **Intro: the binary seedling** (Etienne's call, 2026-10-22: "just the plant and the binary base"; `assets/js/intro.js`,
 `canvas[data-intro]`)
-- A seedling in dark soil, both drawn as a dense grid of Courier Prime `1`/`0` (6px cells), each cell's grey taken
+- A seedling in dark soil, both drawn as a dense grid of Courier Prime `1`/`0` (3px cells since 2026-11-10, the footer scene's grain; veins carved in dark, a bright keyline on the leaf edges), each cell's grey taken
   from the lit scene underneath. Every soil cell holds a bit.
 - **The soil thins out toward the bottom of the screen** (`FADE` in `intro.js`), so the base runs into the page.
 - Motion: a slow blink and a gentle sway, nothing else. No camera moves, no story, no text, no logos.
